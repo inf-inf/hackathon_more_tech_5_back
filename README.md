@@ -38,5 +38,5 @@ pip install -r requirements.txt
 Запуск
 
 ```shell
-uvicorn main:api_app --reload
+uvicorn uvicorn src.main:api_app --reload 
 ```
