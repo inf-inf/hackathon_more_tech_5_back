@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
-engine = create_engine("sqlite://", echo=True)
+engine = create_engine("sqlite:///database.db", echo=True)
 
 
 class Base(DeclarativeBase):
