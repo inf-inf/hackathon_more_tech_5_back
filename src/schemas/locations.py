@@ -1,6 +1,7 @@
-from typing import Literal, Annotated
-from pydantic import BaseModel, Field, ConfigDict
+from typing import Literal, Annotated, Any
+
 from fastapi import Query
+from pydantic import BaseModel, Field, ConfigDict, model_validator
 
 
 class LocationFilter(BaseModel):
@@ -133,13 +134,21 @@ class ATMModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    distance: float | None = None
     address: str
     latitude: float
     longitude: float
-    avg_rating: int | None
+    avg_rating: int | None = None
     reviews: list[ReviewsModel]
     service_info: ATMServicesModel
     week_info: WeekModel
+
+    @model_validator(mode="before")
+    @classmethod
+    def _check_distance(cls, data: Any) -> Any:
+        if hasattr(data, "ATM") and hasattr(data, "distance"):
+            data.ATM.distance = data.distance
+        return data.ATM
 
 
 class OfficeServicesModel(BaseModel):
@@ -159,14 +168,22 @@ class OfficeModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    distance: float | None = None
     address: str
     latitude: float
     longitude: float
-    avg_rating: int | None
+    avg_rating: int | None = None
     reviews: list[ReviewsModel]
-    week_info_fiz: WeekModel | None
-    week_info_yur: WeekModel | None
+    week_info_fiz: WeekModel | None = None
+    week_info_yur: WeekModel | None = None
     service_info: OfficeServicesModel
+
+    @model_validator(mode="before")
+    @classmethod
+    def _check_distance(cls, data: Any) -> Any:
+        if hasattr(data, "Office") and hasattr(data, "distance"):
+            data.Office.distance = data.distance
+        return data.Office
 
 
 FindAtmsResponse = list[ATMModel]
