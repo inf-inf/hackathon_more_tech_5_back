@@ -48,8 +48,8 @@ class StartupEvent:
 
     def run(self):
         """Запуск startup события"""
-        Base.metadata.drop_all(engine)
-        Base.metadata.create_all(engine)
+        Base.metadata.drop_all(engine)  # drop all tables
+        Base.metadata.create_all(engine)  # create all tables
 
         atms_json, offices_json = self.__read_input_json()
 
