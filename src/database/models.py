@@ -98,6 +98,7 @@ class Office(Base):
     week_info_fiz: Mapped["Week | None"] = relationship(foreign_keys=[week_info_fiz_id])
     week_info_yur: Mapped["Week | None"] = relationship(foreign_keys=[week_info_yur_id])
     service_info: Mapped["OfficeServices"] = relationship()
+    history: Mapped[list["OfficeHistory"]] = relationship(back_populates="office")
 
 
 class OfficeReviews(Base):
@@ -141,6 +142,22 @@ class OfficeServices(Base):
 
     currency_input: Mapped["Currency"] = relationship(foreign_keys=[currency_input_id])
     currency_output: Mapped["Currency"] = relationship(foreign_keys=[currency_output_id])
+
+
+class OfficeHistory(Base):
+    """ORM модель для демонстрации истории загруженности офисов
+
+    :param office_id: офис, загруженность которого записывается
+    :param dt: время, когда произошло событие
+    :param count_clients: количество клиентов, которое находится в отделении в указанное время (dt)
+    """
+    __tablename__ = "office_history"
+
+    office_id: Mapped[int] = mapped_column(ForeignKey(Office.id), nullable=False)
+    dt: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    count_clients: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    office: Mapped["Office"] = relationship(back_populates="history")
 
 
 class Week(Base):
@@ -206,7 +223,7 @@ class UserAddresses(Base):
     __tablename__ = "user_addresses"
 
     user_id: Mapped[int] = mapped_column(ForeignKey(Users.id), nullable=False)
-    address: Mapped[str] = mapped_column(String(250))
+    address: Mapped[str] = mapped_column(String(250), nullable=False)
     latitude: Mapped[float] = mapped_column(Float, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
     tag: Mapped[str] = mapped_column(String(30))
@@ -255,7 +272,7 @@ class OfficeQueue(Base):
 
     user_id: Mapped[int] = mapped_column(ForeignKey(Users.id), nullable=False)
     office_id: Mapped[str] = mapped_column(ForeignKey(Office.id), nullable=False)
-    recording_datetime: Mapped[datetime] = mapped_column(DateTime)
+    recording_datetime: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
     office: Mapped[Office] = relationship()
     user: Mapped["Users"] = relationship(back_populates="queue_list")
