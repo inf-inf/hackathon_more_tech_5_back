@@ -203,7 +203,7 @@ class OfficeModel(BaseOrmModel):
     latitude: float
     longitude: float
     avg_rating: int | None = Field(None, alias='avgRating')
-    review_count: int
+    review_count: int = Field(alias='reviewCount')
     week_info_fiz: WeekModel | None = Field(None, alias='weekInfoFiz')
     week_info_yur: WeekModel | None = Field(None, alias='weekInfoYur')
     service_info: OfficeServicesModel = Field(alias='serviceInfo')
