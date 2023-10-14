@@ -75,6 +75,9 @@ class Office(Base):
     :param longitude: географическая долгота
     :param avg_rating: средний рейтинг офиса
     :param with_ramp: есть ли пандус (True - есть)
+    :param week_info_fiz_id: информация о времени работы отделения для физ. лиц
+    :param week_info_yur_id: информация о времени работы отделения для юр. лиц
+    :param service_info_id: информация о предоставляемых услугах в конкретном офисе
     """
     __tablename__ = "office"
 
@@ -85,10 +88,12 @@ class Office(Base):
     with_ramp: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false(), nullable=False)
     week_info_fiz_id: Mapped[int] = mapped_column(ForeignKey("week.id"), nullable=False)
     week_info_yur_id: Mapped[int] = mapped_column(ForeignKey("week.id"), nullable=False)
+    service_info_id: Mapped[int] = mapped_column(ForeignKey("office_service.id"), nullable=False)
 
     reviews: Mapped[list["OfficeReviews"]] = relationship(back_populates="office")
     week_info_fiz: Mapped["Week"] = relationship(foreign_keys=[week_info_fiz_id])
     week_info_yur: Mapped["Week"] = relationship(foreign_keys=[week_info_yur_id])
+    service_info: Mapped["OfficeServices"] = relationship()
 
 
 class OfficeReviews(Base):
