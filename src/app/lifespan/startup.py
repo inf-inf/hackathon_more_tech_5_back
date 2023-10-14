@@ -134,8 +134,12 @@ class StartupEvent:
             self._session.add(office)
 
     @staticmethod
-    def __parse_working_days_office(days: list[dict[str, str]]) -> Week:
+    def __parse_working_days_office(days: list[dict[str, str]]) -> Week | None:
         """Парсятся рабочие дни в конкретном офисе для записи в БД (week)"""
+        choice = random.choice([True, False])
+        if choice:
+            return None
+
         week = Week()
         for day_info in days:
             if day_info["days"] == "пн":
