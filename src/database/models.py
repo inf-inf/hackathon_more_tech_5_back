@@ -169,3 +169,63 @@ class Currency(Base):
     rub: Mapped[bool] = mapped_column(Boolean, nullable=False)
     usd: Mapped[bool] = mapped_column(Boolean, nullable=False)
     eur: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
+
+class Users(Base):
+    """ORM модель пользователя (для облегченной авторизации и персональных возможностей)
+
+    :param phone: номер телефона пользователя (для идентификации)
+    """
+    __tablename__ = "users"
+
+    phone: Mapped[str] = mapped_column(String(20), nullable=False, unique=True)
+
+    favorites_atms: Mapped[list["UserFavoritesATM"]] = relationship(back_populates="user")
+    favorites_offices: Mapped[list["UserFavoritesOffice"]] = relationship(back_populates="user")
+    own_addresses: Mapped[list["UserAddresses"]] = relationship(back_populates="user")
+
+
+class UserAddresses(Base):
+    """ORM модель сохраненных адресов пользователя
+
+    :param user_id: пользователь (ORM Users)
+    :param address: сохраненный пользователем адрес
+    :param tag: личный тег пользователя (для фильтрации и удобного поиска своих адресов)
+    """
+    __tablename__ = "user_addresses"
+
+    user_id: Mapped[int] = mapped_column(ForeignKey(Users.id), nullable=False)
+    address: Mapped[str] = mapped_column(String(250))
+    tag: Mapped[str] = mapped_column(String(30))
+
+    user: Mapped["Users"] = relationship(back_populates="own_addresses")
+
+
+class UserFavoritesATM(Base):
+    """ORM модель избранных банкоматов пользователей
+
+    :param user_id: пользователь (ORM Users)
+    :param atm_id: избранный банкомат пользователя
+    """
+    __tablename__ = "user_favorites_atm"
+
+    user_id: Mapped[int] = mapped_column(ForeignKey(Users.id), nullable=False)
+    atm_id: Mapped[int] = mapped_column(ForeignKey(ATM.id), nullable=False)
+
+    user: Mapped["Users"] = relationship(back_populates="favorites_atms")
+    atm: Mapped[ATM] = relationship()
+
+
+class UserFavoritesOffice(Base):
+    """ORM модель избранных отделений пользователя
+
+    :param user_id: пользователь (ORM Users)
+    :param office_id: избранное пользователем отделение банка
+    """
+    __tablename__ = "user_favorites_office"
+
+    user_id: Mapped[int] = mapped_column(ForeignKey(Users.id), nullable=False)
+    office_id: Mapped[str] = mapped_column(ForeignKey(Office.id), nullable=False)
+
+    user: Mapped["Users"] = relationship(back_populates="favorites_offices")
+    office: Mapped[Office] = relationship()
