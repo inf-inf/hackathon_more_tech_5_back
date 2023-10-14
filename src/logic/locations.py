@@ -8,8 +8,7 @@ class LocationsLogic:
         self._db = db
 
     def find_atms(self, filter_data):
-        # res = locations_crud.get_atms_filtered(self._db)
-        return []
+        return locations_crud.get_atms_filtered(self._db)
 
     def find_offices(self, filter_data):
         return []
