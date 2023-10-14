@@ -148,6 +148,8 @@ class OfficeServicesModel(BaseModel):
     currency_input: Currencies
     currency_output: Currencies
     with_ramp: bool
+    prime: bool
+    vip: bool
     rko: bool
     suo: bool
     kep: bool
@@ -162,8 +164,8 @@ class OfficeModel(BaseModel):
     longitude: float
     avg_rating: int | None
     reviews: list[ReviewsModel]
-    week_info_fiz: WeekModel
-    week_info_yur: WeekModel
+    week_info_fiz: WeekModel | None
+    week_info_yur: WeekModel | None
     service_info: OfficeServicesModel
 
 
