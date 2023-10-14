@@ -1,6 +1,6 @@
 from typing import Any, Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from ..schemas.locations import FindAtmsResponse, FindOfficesResponse, FindAtmsRequest, FindOfficesRequest
 from ..dependencies.logic.locations import get_locations_logic
@@ -26,3 +26,24 @@ def find_offices(filter_data: Annotated[FindOfficesRequest, Depends()],
                  ) -> list[dict[str, Any]]:
     """Поиск оптимальных отделений с применением фильтров"""
     return logic.find_offices(filter_data.model_dump())
+
+
+@locations_router.get('/office_visit/request', summary='Запросить посещение отделения')
+def request_office_visit(office_id: Annotated[int, Query(description="Идентификатор отделения банка")],
+                         logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
+                         ) -> dict[str, Any]:
+    """Получить доступное время для записи в отделение банка
+
+    Регистрация доступна только на текущий день
+    """
+    return logic.request_office_visit(office_id)
+
+
+@locations_router.post('/office_visit/register', summary='Записаться на посещение отделения')
+def register_office_visit(logic: Annotated[LocationsLogic, Depends(get_locations_logic)]) -> dict[str, Any]:
+    """Запись в электронную очередь отделения банка
+
+    Функционал доступен авторизованным клиентам банка, либо пользователям,
+    прошедшим процедуру подтверждения личности (смс, vk, ...)
+    """
+    return logic.register_office_visit()
