@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from sqlalchemy.orm import Session
 
 
-# TODO: нужно лишь для Хакатона, чтобы заполнить БД данными
+# # # TODO: нужно лишь для Хакатона, чтобы заполнить БД данными # # #
 _demo_reviews = [
     "Мне понравилось, неплохо",
     "Господи, что это?",
@@ -29,6 +29,16 @@ _demo_reviews = [
     None,
     None
 ]
+_atm_week_info = {
+    "start": ["06:00", "07:00", "08:00", "08:30", "09:00", "10:00"],
+    "end": ["21:00", "21:30", "21:45", "22:00", "23:00", "00:00", "01:00", "02:00"]
+}
+_atm_services_mapper = {
+    "AVAILABLE": True,
+    "UNAVAILABLE": False,
+    "UNKNOWN": False
+}
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
 class StartupEvent:
@@ -51,12 +61,41 @@ class StartupEvent:
         for atm_json in atms_json:
             reviews = self.__generate_reviews_for_atms()
             avg_rating = int(mean(review.rating for review in reviews)) if reviews else None
+            if atm_json["allDay"]:
+                week_info = Week(all_time=True)
+            else:
+                week_info = Week(
+                    monday=self.__generate_week_info_for_atms(),
+                    tuesday=self.__generate_week_info_for_atms(),
+                    wednesday=self.__generate_week_info_for_atms(),
+                    thursday=self.__generate_week_info_for_atms(),
+                    friday=self.__generate_week_info_for_atms(),
+                    saturday=self.__generate_week_info_for_atms(),
+                    sunday=self.__generate_week_info_for_atms()
+                )
             atm = ATM(
                 address=atm_json["address"],
                 latitude=atm_json["latitude"],
                 longitude=atm_json["longitude"],
                 avg_rating=avg_rating,
-                reviews=reviews
+                reviews=reviews,
+                service_info=ATMServices(
+                    wheelchair=_atm_services_mapper[atm_json["services"]["wheelchair"]["serviceActivity"]],
+                    blind=_atm_services_mapper[atm_json["services"]["blind"]["serviceActivity"]],
+                    nfc=_atm_services_mapper[atm_json["services"]["nfcForBankCards"]["serviceActivity"]],
+                    qr_code=_atm_services_mapper[atm_json["services"]["qrRead"]["serviceActivity"]],
+                    currency_input=Currency(
+                        rub=_atm_services_mapper[atm_json["services"]["supportsRub"]["serviceActivity"]],
+                        usd=_atm_services_mapper[atm_json["services"]["supportsUsd"]["serviceActivity"]],
+                        eur=_atm_services_mapper[atm_json["services"]["supportsEur"]["serviceActivity"]]
+                    ),
+                    currency_output=Currency(
+                        rub=_atm_services_mapper[atm_json["services"]["supportsChargeRub"]["serviceActivity"]],
+                        usd=False,
+                        eur=False
+                    )
+                ),
+                week_info=week_info
             )
             self._session.add(atm)
 
@@ -118,6 +157,12 @@ class StartupEvent:
         """Генерирует отзывы для банкоматов (atm_reviews)"""
         return [ATMReviews(rating=random.randint(10, 50), content=random.choice(_demo_reviews))
                 for _ in range(random.randint(0, 10))]
+
+    @staticmethod
+    def __generate_week_info_for_atms() -> str | None:
+        """Генерирует время работы банкомата на неделе"""
+        work_time = f'{random.choice(_atm_week_info["start"])}-{random.choice(_atm_week_info["end"])}'
+        return random.choice([work_time, work_time, work_time, None])
 
     @staticmethod
     def __generate_reviews_for_offices():
