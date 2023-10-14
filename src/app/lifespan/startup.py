@@ -108,12 +108,12 @@ class StartupEvent:
                 address=office_json["address"],
                 latitude=office_json["latitude"],
                 longitude=office_json["longitude"],
-                with_ramp=office_json["hasRamp"] == "Y" if office_json["hasRamp"] else False,
                 avg_rating=avg_rating,
                 reviews=reviews,
                 week_info_fiz=self.__parse_working_days_office(office_json["openHoursIndividual"]),
                 week_info_yur=self.__parse_working_days_office(office_json["openHours"]),
                 service_info=OfficeServices(
+                    with_ramp=office_json["hasRamp"] == "Y" if office_json["hasRamp"] else False,
                     rko=office_json["rko"] == "есть РКО" if office_json["rko"] else False,
                     suo=office_json["suoAvailability"] == "Y",
                     kep=office_json["kep"] or False,

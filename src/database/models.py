@@ -85,7 +85,6 @@ class Office(Base):
     latitude: Mapped[float] = mapped_column(Float, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
     avg_rating: Mapped[int | None] = mapped_column(Integer)
-    with_ramp: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false(), nullable=False)
     week_info_fiz_id: Mapped[int] = mapped_column(ForeignKey("week.id"), nullable=False)
     week_info_yur_id: Mapped[int] = mapped_column(ForeignKey("week.id"), nullable=False)
     service_info_id: Mapped[int] = mapped_column(ForeignKey("office_service.id"), nullable=False)
@@ -125,6 +124,7 @@ class OfficeServices(Base):
 
     currency_input_id: Mapped[int] = mapped_column(ForeignKey("currency.id"), nullable=False)
     currency_output_id: Mapped[int] = mapped_column(ForeignKey("currency.id"), nullable=False)
+    with_ramp: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false(), nullable=False)
     rko: Mapped[bool] = mapped_column(Boolean, nullable=False)
     suo: Mapped[bool] = mapped_column(Boolean, nullable=False)
     kep: Mapped[bool] = mapped_column(Boolean, nullable=False)
