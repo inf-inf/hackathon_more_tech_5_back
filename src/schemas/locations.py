@@ -111,7 +111,7 @@ class WeekModel(BaseModel):
     sunday: str | None
 
 
-class ATMReviewsModel(BaseModel):
+class ReviewsModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     rating: int
@@ -137,7 +137,7 @@ class ATMModel(BaseModel):
     latitude: float
     longitude: float
     avg_rating: int | None
-    reviews: list[ATMReviewsModel]
+    reviews: list[ReviewsModel]
     service_info: ATMServicesModel
     week_info: WeekModel
 
