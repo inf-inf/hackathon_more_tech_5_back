@@ -200,6 +200,8 @@ class UserAddresses(Base):
 
     user_id: Mapped[int] = mapped_column(ForeignKey(Users.id), nullable=False)
     address: Mapped[str] = mapped_column(String(250))
+    latitude: Mapped[float] = mapped_column(Float, nullable=False)
+    longitude: Mapped[float] = mapped_column(Float, nullable=False)
     tag: Mapped[str] = mapped_column(String(30))
 
     user: Mapped["Users"] = relationship(back_populates="own_addresses")
