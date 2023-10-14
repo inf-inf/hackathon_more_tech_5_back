@@ -137,7 +137,6 @@ class ATMModel(BaseModel):
     latitude: float
     longitude: float
     avg_rating: int | None
-    reviews: list[ReviewsModel]
     service_info: ATMServicesModel
     week_info: WeekModel
 
@@ -163,7 +162,6 @@ class OfficeModel(BaseModel):
     latitude: float
     longitude: float
     avg_rating: int | None
-    reviews: list[ReviewsModel]
     week_info_fiz: WeekModel | None
     week_info_yur: WeekModel | None
     service_info: OfficeServicesModel
