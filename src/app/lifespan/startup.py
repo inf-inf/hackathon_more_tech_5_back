@@ -73,7 +73,22 @@ class StartupEvent:
                 avg_rating=avg_rating,
                 reviews=reviews,
                 week_info_fiz=self.__parse_working_days_office(office_json["openHoursIndividual"]),
-                week_info_yur=self.__parse_working_days_office(office_json["openHours"])
+                week_info_yur=self.__parse_working_days_office(office_json["openHours"]),
+                service_info=OfficeServices(
+                    rko=office_json["rko"] == "есть РКО" if office_json["rko"] else False,
+                    suo=office_json["suoAvailability"] == "Y",
+                    kep=office_json["kep"] or False,
+                    currency_input=Currency(
+                        rub=True,
+                        usd=True,
+                        eur=True
+                    ),
+                    currency_output=Currency(
+                        rub=True,
+                        usd=True,
+                        eur=True
+                    )
+                )
             )
             self._session.add(office)
 
