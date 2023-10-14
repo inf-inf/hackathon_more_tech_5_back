@@ -1,23 +1,31 @@
-from typing import Literal, Annotated, Any
+from typing import Annotated, Any
 
 from fastapi import Query
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, field_serializer
 
 from .base import BaseOrmModel
 
 
 class LocationFilter(BaseModel):
     latitude: Annotated[
-        float | None,
-        Field(Query(None, description="Широта пользователя", examples=[55.784435]))
+        float,
+        Field(Query(description="Широта пользователя", examples=[55.784435]))
     ]
     longitude: Annotated[
+        float,
+        Field(Query(description="Долгота пользователя", examples=[37.45707]))
+    ]
+    initial_latitude: Annotated[
         float | None,
-        Field(Query(None, description="Долгота пользователя", examples=[37.45707]))
+        Field(Query(None, alias='initialLatitude', description="Базовая широта пользователя", examples=[55.784435]))
+    ]
+    initial_longitude: Annotated[
+        float | None,
+        Field(Query(None, alias='initialLongitude', description="Базовая долгота пользователя", examples=[37.45707]))
     ]
     zoom: Annotated[
-        float | None,
-        Field(Query(None, description="Приближение на карте", examples=[5]))
+        float,
+        Field(Query(description="Приближение на карте", examples=[16.45]))
     ]
 
 
@@ -27,9 +35,16 @@ class FindAtmsRequest(LocationFilter):
         bool | None,
         Field(Query(None, alias='allDay', description='Работает круглосуточно', examples=['false']))
     ]
-    working_now: Annotated[
-        bool | None,
-        Field(Query(None, alias='workingNow', description='Работает сейчас', examples=['true']))
+    avg_rating: Annotated[
+        int | None,
+        Field(
+            Query(
+                None,
+                alias='avgRating',
+                description='Средний рейтинг банкомата, минимальное значение',
+                examples=['true']
+            )
+        )
     ]
     wheelchair: Annotated[
         bool | None,
@@ -43,7 +58,10 @@ class FindAtmsRequest(LocationFilter):
         bool | None,
         Field(
             Query(
-                None, alias='nfcSupport', description='Поддержка NFC (бесконтактное обслуживание)', examples=['true']
+                None,
+                alias='nfcSupport',
+                description='Поддержка NFC (бесконтактное обслуживание)',
+                examples=['true']
             )
         )
     ]
@@ -52,15 +70,36 @@ class FindAtmsRequest(LocationFilter):
         Field(Query(None, alias='qrSupport', description='Поддержка QR-кода', examples=['false']))
     ]
     withdraw_currencies: Annotated[
-        list[Literal['usd', 'eur', 'rub']] | None,
+        str | None,
         Field(
-            Query(None, alias='withdrawCurrencies', description='Доступные валюты для снятия', examples=['usd'])
+            Query(
+                None,
+                alias='withdrawCurrencies',
+                description='Доступные валюты для снятия (usd, eur, rub)',
+                examples=['usd, rub']
+            )
         )
     ]
     deposit_currencies: Annotated[
-        list[Literal['usd', 'eur', 'rub']] | None,
-        Field(Query(None, alias='depositCurrencies', description='Доступные валюты для внесения', examples=['rub']))
+        str | None,
+        Field(
+            Query(
+                None,
+                alias='depositCurrencies',
+                description='Доступные валюты для внесения (usd, eur, rub)',
+                examples=['rub']
+            )
+        )
     ]
+
+    @field_serializer('withdraw_currencies')
+    def serialize_withdraw_currencies(self, withdraw_currencies: str | None, _info):
+        return [currency.strip() for currency in withdraw_currencies.split(',')] if withdraw_currencies else None
+
+    @field_serializer('deposit_currencies')
+    def serialize_deposit_currencies(self, deposit_currencies: str | None, _info):
+        return [currency.strip() for currency in deposit_currencies.split(',')] if deposit_currencies else None
+
 
 
 class FindOfficesRequest(LocationFilter):

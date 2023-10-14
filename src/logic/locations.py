@@ -7,7 +7,7 @@ class LocationsLogic:
     def __init__(self, db: Session):
         self._db = db
 
-    def find_atms(self, filter_data):
+    def find_atms(self, filter_data: locations_crud.FindATMFilter):
         return locations_crud.get_atms_filtered(self._db, filter_data)
 
     def find_offices(self, filter_data):
