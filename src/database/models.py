@@ -38,6 +38,29 @@ class ATMReviews(Base):
     atm: Mapped["ATM"] = relationship(back_populates="reviews")
 
 
+class ATMServices(Base):
+    """ORM модель возможностей (услуг) конкретного банкомата
+
+    :param currency_input_id: информация о валюте, которую может принять банкомат
+    :param currency_output_id: информация о валюте, которую может выдать банкомат
+    :param wheelchair: доступен ли для маломобильных граждан
+    :param blind: оборудован для слабовидящих
+    :param nfc: есть поддержка NFC
+    :param qr_code: есть поддержка работы с QR-кодами
+    """
+    __tablename__ = "atm_service"
+
+    currency_input_id: Mapped[int] = mapped_column(ForeignKey("currency.id"), nullable=False)
+    currency_output_id: Mapped[int] = mapped_column(ForeignKey("currency.id"), nullable=False)
+    wheelchair: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    blind: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    nfc: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    qr_code: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
+    currency_input: Mapped["Currency"] = relationship(foreign_keys=[currency_input_id])
+    currency_output: Mapped["Currency"] = relationship(foreign_keys=[currency_output_id])
+
+
 class Office(Base):
     """ORM модель для офисов
 
