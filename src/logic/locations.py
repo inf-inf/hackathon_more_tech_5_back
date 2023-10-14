@@ -11,7 +11,7 @@ class LocationsLogic:
         return locations_crud.get_atms_filtered(self._db)
 
     def find_offices(self, filter_data):
-        return []
+        return locations_crud.get_offices_filtered(self._db)
 
     def request_office_visit(self, _office_id: int) -> dict[str, bool]:
         return {'9:00': False, '9:15': True, '9:30': False}
