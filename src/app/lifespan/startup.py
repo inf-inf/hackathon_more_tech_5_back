@@ -104,14 +104,20 @@ class StartupEvent:
         for office_json in offices_json:
             reviews = self.__generate_reviews_for_offices()
             avg_rating = int(mean(review.rating for review in reviews)) if reviews else None
+            week_info_fiz = self.__parse_working_days_office(office_json["openHoursIndividual"])
+            week_info_yur = self.__parse_working_days_office(
+                office_json["openHours"],
+                # проверка, чтобы не было ситуации, когда офис не работает ни для физ. лиц, ни для юр. лиц
+                need_random=week_info_fiz is not None
+            )
             office = Office(
                 address=office_json["address"],
                 latitude=office_json["latitude"],
                 longitude=office_json["longitude"],
                 avg_rating=avg_rating,
                 reviews=reviews,
-                week_info_fiz=self.__parse_working_days_office(office_json["openHoursIndividual"]),
-                week_info_yur=self.__parse_working_days_office(office_json["openHours"]),
+                week_info_fiz=week_info_fiz,
+                week_info_yur=week_info_yur,
                 service_info=OfficeServices(
                     with_ramp=office_json["hasRamp"] == "Y" if office_json["hasRamp"] else False,
                     prime=random.choice([True, True, True, False]),
@@ -134,10 +140,14 @@ class StartupEvent:
             self._session.add(office)
 
     @staticmethod
-    def __parse_working_days_office(days: list[dict[str, str]]) -> Week | None:
-        """Парсятся рабочие дни в конкретном офисе для записи в БД (week)"""
+    def __parse_working_days_office(days: list[dict[str, str]], *, need_random: bool = True) -> Week | None:
+        """Парсятся рабочие дни в конкретном офисе для записи в БД (week)
+
+        :param days: информация о днях недели из json
+        :param need_random: использовать ли random или нет (True - использовать)
+        """
         choice = random.choice([True, False])
-        if choice:
+        if not choice and need_random:
             return None
 
         week = Week()
