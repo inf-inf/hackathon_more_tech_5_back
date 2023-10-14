@@ -7,6 +7,32 @@ from .. import models
 _EARTH_RADIUS = 6371  # примерный радиус Земли в км
 
 
+def _zoom_mapper(zoom: float) -> float:
+    """TODO: временное решение, для оптимизации возвращаемых точек
+
+    :param zoom: приблежение на карте
+    """
+    if zoom < 10:
+        radius = 999999.0
+    elif zoom < 10.5:
+        radius = 40.0
+    elif zoom < 11:
+        radius = 25.0
+    elif zoom < 12:
+        radius = 20.0
+    elif zoom < 13:
+        radius = 10.0
+    elif zoom < 14:
+        radius = 5.0
+    elif zoom < 15:
+        radius = 2.0
+    elif zoom < 16:
+        radius = 1.0
+    else:
+        radius = 0.5
+    return radius
+
+
 class FindATMFilter(TypedDict):
     latitude: float
     longitude: float
@@ -25,14 +51,21 @@ class FindATMFilter(TypedDict):
 
 def get_atms_filtered(db: Session, filter_data: FindATMFilter):
     # TODO Добавить withdraw_currencies, deposit_currencies, ограничение числа точек в завис. от координат
+    radius_search = _zoom_mapper(filter_data["zoom"])
     stmt = select(
         models.ATM,
         (func.acos(
             func.sin(func.radians(models.ATM.latitude)) * func.sin(func.radians(filter_data["initial_latitude"])) +
             func.cos(func.radians(models.ATM.latitude)) * func.cos(func.radians(filter_data["initial_latitude"])) *
             func.cos(func.radians(models.ATM.longitude) - func.radians(filter_data["initial_longitude"]))
-        ) * _EARTH_RADIUS).label("distance")
+        ) * _EARTH_RADIUS).label("distance"),
     ).where(
+        (func.acos(
+            func.sin(func.radians(models.ATM.latitude)) * func.sin(func.radians(filter_data["latitude"])) +
+            func.cos(func.radians(models.ATM.latitude)) * func.cos(func.radians(filter_data["latitude"])) *
+            func.cos(func.radians(models.ATM.longitude) - func.radians(filter_data["longitude"]))
+        ) * _EARTH_RADIUS) <= radius_search,
+
         models.ATM.avg_rating.is_not(None) if filter_data["avg_rating"] else True,
         models.ATM.avg_rating >= filter_data["avg_rating"] if filter_data["avg_rating"] else True,
         models.Week.all_time == filter_data["all_day"] if filter_data["all_day"] else True,
@@ -49,17 +82,21 @@ def get_atms_filtered(db: Session, filter_data: FindATMFilter):
 
 
 def get_offices_filtered(db: Session, filter_data):
-    if filter_data["latitude"] and filter_data["longitude"]:
-        stmt = select(
-            models.Office,
-            (func.acos(
-                func.sin(func.radians(models.Office.latitude)) * func.sin(func.radians(filter_data["latitude"])) +
-                func.cos(func.radians(models.Office.latitude)) * func.cos(func.radians(filter_data["latitude"])) *
-                func.cos(func.radians(models.Office.longitude) - func.radians(filter_data["longitude"]))
-            ) * _EARTH_RADIUS).label("distance")
-        )
-    else:
-        stmt = select(models.Office)
+    radius_search = _zoom_mapper(filter_data["zoom"])
+    stmt = select(
+        models.Office,
+        (func.acos(
+            func.sin(func.radians(models.Office.latitude)) * func.sin(func.radians(filter_data["initial_latitude"])) +
+            func.cos(func.radians(models.Office.latitude)) * func.cos(func.radians(filter_data["initial_latitude"])) *
+            func.cos(func.radians(models.Office.longitude) - func.radians(filter_data["initial_longitude"]))
+        ) * _EARTH_RADIUS).label("distance")
+    ).where(
+        (func.acos(
+            func.sin(func.radians(models.ATM.latitude)) * func.sin(func.radians(filter_data["latitude"])) +
+            func.cos(func.radians(models.ATM.latitude)) * func.cos(func.radians(filter_data["latitude"])) *
+            func.cos(func.radians(models.ATM.longitude) - func.radians(filter_data["longitude"]))
+        ) * _EARTH_RADIUS) <= radius_search,
+    )
     return db.execute(stmt).all()
 
 
