@@ -21,5 +21,10 @@ class UserLogic:
         code = self._sms.generate_code()
         self._sms.send(phone, code)
         sent_time = datetime.now()
-        # TODO save code
-        return SentSmsInfo(phone=phone, sent_time=sent_time, expiration_time=sent_time + self._sms_lifetime)
+        sms_info = SentSmsInfo(phone=phone, sent_time=sent_time, expiration_time=sent_time + self._sms_lifetime)
+        # TODO save sms_info
+        return sms_info
+
+    def confirm_sms(self, code: str):
+        """Подтвердить номер по коду из смс"""
+        ...
