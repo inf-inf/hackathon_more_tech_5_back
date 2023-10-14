@@ -12,9 +12,9 @@ history_router = APIRouter(
 )
 
 
-@history_router.get('/office', response_model=OfficeHistoryResponse, summary='Поиск банкоматов')
-def find_atms(id: Annotated[int, Query(..., description="id отделения", examples=[1])],
+@history_router.get('/office', response_model=OfficeHistoryResponse, summary='Загруженность отделения')
+def find_atms(office_id: Annotated[int, Query(..., alias='id', description="id отделения", examples=[1])],
               logic: Annotated[HistoryLogic, Depends(get_history_logic)],
               ) -> list[dict[str, Any]]:
-    """Поиск оптимальных банкоматов с применением фильтров"""
-    return logic.find_office_history(id)
+    """Запрос истории по загруженности отделения банка"""
+    return logic.find_office_history(office_id)
