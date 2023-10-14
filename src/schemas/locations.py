@@ -142,6 +142,31 @@ class ATMModel(BaseModel):
     week_info: WeekModel
 
 
+class OfficeServicesModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    currency_input: Currencies
+    currency_output: Currencies
+    with_ramp: bool
+    rko: bool
+    suo: bool
+    kep: bool
+
+
+class OfficeModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    address: str
+    latitude: float
+    longitude: float
+    avg_rating: int | None
+    reviews: list[ReviewsModel]
+    week_info_fiz: WeekModel
+    week_info_yur: WeekModel
+    service_info: OfficeServicesModel
+
+
 FindAtmsResponse = list[ATMModel]
 
-FindOfficesResponse = list[OfficeLocation]
+FindOfficesResponse = list[OfficeModel]
