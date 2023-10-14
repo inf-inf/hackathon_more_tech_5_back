@@ -1,4 +1,6 @@
-from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, false
+from datetime import datetime
+
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, false
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -187,6 +189,7 @@ class Users(Base):
     favorites_atms: Mapped[list["UserFavoritesATM"]] = relationship(back_populates="user")
     favorites_offices: Mapped[list["UserFavoritesOffice"]] = relationship(back_populates="user")
     own_addresses: Mapped[list["UserAddresses"]] = relationship(back_populates="user")
+    queue_list: Mapped[list["OfficeQueue"]] = relationship(back_populates="user")
 
 
 class UserAddresses(Base):
@@ -235,3 +238,20 @@ class UserFavoritesOffice(Base):
 
     user: Mapped["Users"] = relationship(back_populates="favorites_offices")
     office: Mapped[Office] = relationship()
+
+
+class OfficeQueue(Base):
+    """ORM модель для записи в очередь
+
+    :param user_id: пользователь (ORM Users)
+    :param office_id: отделение банка, в которое записался пользователь
+    :param recording_datetime: время записи для приема/консультации в отделении (пример: "2023-10-14 18:30:00")
+    """
+    __tablename__ = "office_queue"
+
+    user_id: Mapped[int] = mapped_column(ForeignKey(Users.id), nullable=False)
+    office_id: Mapped[str] = mapped_column(ForeignKey(Office.id), nullable=False)
+    recording_datetime: Mapped[datetime] = mapped_column(DateTime)
+
+    office: Mapped[Office] = relationship()
+    user: Mapped["Users"] = relationship(back_populates="queue_list")
