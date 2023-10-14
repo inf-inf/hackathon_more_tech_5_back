@@ -37,7 +37,7 @@ def find_offices(filter_data: Annotated[FindOfficesRequest, Depends()],
 
 
 @locations_router.get('/get_atm_reviews', response_model=GetATMReviewsResponse, summary='Отзывы о банкомате')
-def get_atm_reviews(atm_id: Annotated[int, Query()],
+def get_atm_reviews(atm_id: Annotated[int, Query(alias='atmId')],
                     logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
                     ) -> list[dict[str, Any]]:
     """Получить список отзывов о банкомате"""
@@ -45,7 +45,7 @@ def get_atm_reviews(atm_id: Annotated[int, Query()],
 
 
 @locations_router.get('/get_office_reviews', response_model=GetOfficeReviewsResponse, summary='Отзывы об отделении')
-def get_office_reviews(office_id: Annotated[int, Query()],
+def get_office_reviews(office_id: Annotated[int, Query(alias='officeId')],
                        logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
                        ) -> list[dict[str, Any]]:
     """Получить список отзывов об отделении банка"""
@@ -53,7 +53,7 @@ def get_office_reviews(office_id: Annotated[int, Query()],
 
 
 @locations_router.get('/office_visit/request', summary='Запросить посещение отделения')
-def request_office_visit(office_id: Annotated[int, Query(description="Идентификатор отделения банка")],
+def request_office_visit(office_id: Annotated[int, Query(alias='officeId', description="Идентификатор отделения банка")],
                          logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
                          ) -> dict[str, Any]:
     """Получить доступное время для записи в отделение банка
