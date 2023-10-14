@@ -132,6 +132,7 @@ class ATMModel(BaseModel):
     latitude: float
     longitude: float
     avg_rating: int | None = None
+    review_count: int
     service_info: ATMServicesModel
     week_info: WeekModel
 
@@ -165,6 +166,7 @@ class OfficeModel(BaseModel):
     latitude: float
     longitude: float
     avg_rating: int | None = None
+    review_count: int
     week_info_fiz: WeekModel | None = None
     week_info_yur: WeekModel | None = None
     service_info: OfficeServicesModel
