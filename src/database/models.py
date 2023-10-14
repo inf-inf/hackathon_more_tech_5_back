@@ -101,6 +101,27 @@ class OfficeReviews(Base):
     office: Mapped["Office"] = relationship(back_populates="reviews")
 
 
+class OfficeServices(Base):
+    """ORM модель услуг, которые могут быть у конкретного офиса
+
+    :param currency_input_id: информация о валюте, которую могут принимать в отделении банка
+    :param currency_output_id: информация о валюте, которую могут выдавать в отделении банка
+    :param rko: наличие РКО
+    :param suo: наличие СУО
+    :param kep: есть ли возможность выдать КЭП
+    """
+    __tablename__ = "office_service"
+
+    currency_input_id: Mapped[int] = mapped_column(ForeignKey("currency.id"), nullable=False)
+    currency_output_id: Mapped[int] = mapped_column(ForeignKey("currency.id"), nullable=False)
+    rko: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    suo: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    kep: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
+    currency_input: Mapped["Currency"] = relationship(foreign_keys=[currency_input_id])
+    currency_output: Mapped["Currency"] = relationship(foreign_keys=[currency_output_id])
+
+
 class Week(Base):
     """ORM модель для информации о рабочей неделе
 
