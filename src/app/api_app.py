@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from .lifespan import lifespan
 from ..routers import api_routers
 from .middleware.security import add_response_token_header
+from .exceptions import exception_handlers
 
 
 class ApiApp(FastAPI):
@@ -12,6 +13,7 @@ class ApiApp(FastAPI):
             description="Сервис для подбора оптимального отделения банка, учитывая потребности клиента и доступность "
                         "услуг",
             lifespan=lifespan,
+            exception_handlers=exception_handlers,
             **kwargs
         )
 

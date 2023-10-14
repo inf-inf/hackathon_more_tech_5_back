@@ -24,4 +24,4 @@ def request_sms(data: SendSmsRequest,
 def confirm_sms(data: ConfirmSmsRequest,
                 logic: Annotated[UserLogic, Depends(get_user_logic)],
                 ) -> dict[str, Any]:
-    return logic.confirm_sms(data.code)
+    return {'token': logic.confirm_sms(data.code)}

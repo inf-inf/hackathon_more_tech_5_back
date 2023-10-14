@@ -2,6 +2,7 @@ from typing import TypedDict
 from datetime import datetime, timedelta
 
 from ..models.sms import SMS
+from ..models.security import UserToken
 
 
 class SentSmsInfo(TypedDict):
@@ -15,6 +16,7 @@ class UserLogic:
     def __init__(self):
         self._sms = SMS()
         self._sms_lifetime = timedelta(minutes=5)
+        self._user_token = UserToken()
 
     def request_sms(self, phone: str) -> SentSmsInfo:
         """Запросить смс для подтверждения"""
@@ -25,6 +27,8 @@ class UserLogic:
         # TODO save sms_info
         return sms_info
 
-    def confirm_sms(self, code: str):
+    def confirm_sms(self, code: str) -> str:
         """Подтвердить номер по коду из смс"""
-        ...
+        # TODO get sms_info from cache
+        phone = '123'
+        return self._user_token.set_new_token(phone)
