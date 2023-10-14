@@ -60,6 +60,7 @@ class StartupEvent:
         """Создает записи про банкоматы в БД (atms)"""
         for atm_json in atms_json:
             reviews = self.__generate_reviews_for_atms()
+            review_count = len(reviews)
             avg_rating = int(mean(review.rating for review in reviews)) if reviews else None
             if atm_json["allDay"]:
                 week_info = Week(all_time=True)
@@ -79,6 +80,7 @@ class StartupEvent:
                 longitude=atm_json["longitude"],
                 avg_rating=avg_rating,
                 reviews=reviews,
+                review_count=review_count,
                 service_info=ATMServices(
                     wheelchair=_atm_services_mapper[atm_json["services"]["wheelchair"]["serviceActivity"]],
                     blind=_atm_services_mapper[atm_json["services"]["blind"]["serviceActivity"]],
@@ -103,6 +105,7 @@ class StartupEvent:
         """Создает записи про офисы в БД (offices)"""
         for office_json in offices_json:
             reviews = self.__generate_reviews_for_offices()
+            review_count = len(reviews)
             avg_rating = int(mean(review.rating for review in reviews)) if reviews else None
             week_info_fiz = self.__parse_working_days_office(office_json["openHoursIndividual"])
             week_info_yur = self.__parse_working_days_office(
@@ -116,6 +119,7 @@ class StartupEvent:
                 longitude=office_json["longitude"],
                 avg_rating=avg_rating,
                 reviews=reviews,
+                review_count=review_count,
                 week_info_fiz=week_info_fiz,
                 week_info_yur=week_info_yur,
                 service_info=OfficeServices(
