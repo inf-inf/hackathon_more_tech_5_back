@@ -1,7 +1,14 @@
+from sqlalchemy.orm import Session
+from ..database.crud import locations as locations_crud
+
 
 class LocationsLogic:
     """Логика работы с отделениями и банкоматами"""
+    def __init__(self, db: Session):
+        self._db = db
+
     def find_atms(self, filter_data):
+        # res = locations_crud.get_atms_filtered(self._db)
         return []
 
     def find_offices(self, filter_data):
