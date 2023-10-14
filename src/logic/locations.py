@@ -8,10 +8,10 @@ class LocationsLogic:
         self._db = db
 
     def find_atms(self, filter_data):
-        return locations_crud.get_atms_filtered(self._db)
+        return locations_crud.get_atms_filtered(self._db, filter_data)
 
     def find_offices(self, filter_data):
-        return locations_crud.get_offices_filtered(self._db)
+        return locations_crud.get_offices_filtered(self._db, filter_data)
 
     def request_office_visit(self, _office_id: int) -> dict[str, bool]:
         return {'9:00': False, '9:15': True, '9:30': False}
