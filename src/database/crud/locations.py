@@ -28,9 +28,9 @@ def get_atms_filtered(db: Session, filter_data: FindATMFilter):
     stmt = select(
         models.ATM,
         (func.acos(
-            func.sin(func.radians(models.ATM.latitude)) * func.sin(func.radians(filter_data["latitude"])) +
-            func.cos(func.radians(models.ATM.latitude)) * func.cos(func.radians(filter_data["latitude"])) *
-            func.cos(func.radians(models.ATM.longitude) - func.radians(filter_data["longitude"]))
+            func.sin(func.radians(models.ATM.latitude)) * func.sin(func.radians(filter_data["initial_latitude"])) +
+            func.cos(func.radians(models.ATM.latitude)) * func.cos(func.radians(filter_data["initial_latitude"])) *
+            func.cos(func.radians(models.ATM.longitude) - func.radians(filter_data["initial_longitude"]))
         ) * _EARTH_RADIUS).label("distance")
     ).where(
         models.ATM.avg_rating.is_not(None) if filter_data["avg_rating"] else True,
