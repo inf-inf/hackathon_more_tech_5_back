@@ -142,3 +142,17 @@ class Week(Base):
     friday: Mapped[str | None] = mapped_column(String(15))
     saturday: Mapped[str | None] = mapped_column(String(15))
     sunday: Mapped[str | None] = mapped_column(String(15))
+
+
+class Currency(Base):
+    """ORM модель для информации о допустимой валюте
+
+    :param rub: принимаются ли рубли
+    :param usd: принимаются ли доллары
+    :param eur: принимаются ли евро
+    """
+    __tablename__ = "currency"
+
+    rub: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    usd: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    eur: Mapped[bool] = mapped_column(Boolean, nullable=False)
