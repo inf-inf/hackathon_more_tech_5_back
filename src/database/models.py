@@ -11,6 +11,8 @@ class ATM(Base):
     :param latitude: географическая широта
     :param longitude: географическая долгота
     :param avg_rating: средний рейтинг банкомата
+    :param service_info_id: внешний ключ на ATMService (информация о возможностях (услугах) в банкомате
+    :param week_info_id: информация о времени работы банкомата по дням недели
     """
     __tablename__ = "atm"
 
@@ -18,8 +20,12 @@ class ATM(Base):
     latitude: Mapped[float] = mapped_column(Float, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
     avg_rating: Mapped[int | None] = mapped_column(Integer)
+    service_info_id: Mapped[int] = mapped_column(ForeignKey("atm_service.id"), nullable=False)
+    week_info_id: Mapped[int] = mapped_column(ForeignKey("week.id"), nullable=False)
 
     reviews: Mapped[list["ATMReviews"]] = relationship(back_populates="atm")
+    service_info: Mapped["ATMServices"] = relationship()
+    week_info: Mapped["Week"] = relationship()
 
 
 class ATMReviews(Base):
