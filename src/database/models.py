@@ -17,7 +17,9 @@ class ATM(Base):
     address: Mapped[str] = mapped_column(String(250), nullable=False)
     latitude: Mapped[float] = mapped_column(Float, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
-    avg_rating: Mapped[int] = mapped_column(Integer)
+    avg_rating: Mapped[int | None] = mapped_column(Integer)
+
+    reviews: Mapped[list["ATMReviews"]] = relationship(back_populates="atm")
 
 
 class ATMReviews(Base):
@@ -32,6 +34,8 @@ class ATMReviews(Base):
     atm_id: Mapped[int] = mapped_column(ForeignKey(ATM.id), nullable=False)
     rating: Mapped[int] = mapped_column(Integer, nullable=False)
     content: Mapped[str | None] = mapped_column(String(200))
+
+    atm: Mapped["ATM"] = relationship(back_populates="reviews")
 
 
 class Office(Base):
@@ -50,6 +54,12 @@ class Office(Base):
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
     avg_rating: Mapped[int | None] = mapped_column(Integer)
     with_ramp: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false(), nullable=False)
+    week_info_fiz_id: Mapped[int] = mapped_column(ForeignKey("week.id"), nullable=False)
+    week_info_yur_id: Mapped[int] = mapped_column(ForeignKey("week.id"), nullable=False)
+
+    reviews: Mapped[list["OfficeReviews"]] = relationship(back_populates="office")
+    week_info_fiz: Mapped["Week"] = relationship(foreign_keys=[week_info_fiz_id])
+    week_info_yur: Mapped["Week"] = relationship(foreign_keys=[week_info_yur_id])
 
 
 class OfficeReviews(Base):
@@ -63,13 +73,14 @@ class OfficeReviews(Base):
 
     office_id: Mapped[int] = mapped_column(ForeignKey(Office.id), nullable=False)
     rating: Mapped[int] = mapped_column(Integer, nullable=False)
-    content: Mapped[str] = mapped_column(String(200))
+    content: Mapped[str | None] = mapped_column(String(200))
+
+    office: Mapped["Office"] = relationship(back_populates="reviews")
 
 
 class Week(Base):
     """ORM модель для информации о рабочей неделе
 
-    :param office_id: внешний ключ на office.id
     :param monday: время работы офиса в понедельник (через "-", пример "09:00-18:00")
     :param tuesday: время работы офиса во вторник (через "-", пример "09:00-18:00")
     :param wednesday: время работы офиса в среду (через "-", пример "09:00-18:00")
@@ -80,7 +91,6 @@ class Week(Base):
     """
     __tablename__ = "week"
 
-    office_id: Mapped[int] = mapped_column(ForeignKey(Office.id), nullable=False)
     monday: Mapped[str | None] = mapped_column(String(15))
     tuesday: Mapped[str | None] = mapped_column(String(15))
     wednesday: Mapped[str | None] = mapped_column(String(15))
