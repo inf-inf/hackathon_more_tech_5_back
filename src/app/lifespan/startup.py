@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from datetime import datetime
 import json
 import random
 from statistics import mean
 from typing import TYPE_CHECKING, Any
 
-from src.database.models import ATM, ATMReviews, ATMServices, Currency, Office, OfficeReviews, OfficeServices, Week
+from src.database.models import (
+    ATM, ATMReviews, ATMServices, Currency, Office, OfficeHistory, OfficeReviews, OfficeServices, Week
+)
 from src.database.base import Base, engine
 
 if TYPE_CHECKING:
@@ -38,6 +41,13 @@ _atm_services_mapper = {
     "UNAVAILABLE": False,
     "UNKNOWN": False
 }
+_office_history_time = [
+    "12:00:00", "13:00:00", "14:00:00", "15:00:00", "16:00:00", "17:00:00", "18:00:00", "19:00:00", "20:00:00"
+]
+_office_history_date = [
+    "2023-10-01", "2023-10-02", "2023-10-03", "2023-10-04", "2023-10-05", "2023-10-06", "2023-10-07", "2023-10-08",
+    "2023-10-09", "2023-10-10", "2023-10-11", "2023-10-12", "2023-10-13", "2023-10-14"
+]
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
@@ -139,7 +149,8 @@ class StartupEvent:
                         usd=True,
                         eur=True
                     )
-                )
+                ),
+                history=self.__generate_history_for_office()
             )
             self._session.add(office)
 
@@ -189,6 +200,19 @@ class StartupEvent:
         """Генерирует отзывы для банкоматов (office_reviews)"""
         return [OfficeReviews(rating=random.randint(10, 50), content=random.choice(_demo_reviews))
                 for _ in range(random.randint(0, 10))]
+
+    @staticmethod
+    def __generate_history_for_office():
+        """Генерирует историю посещения (событий) офиса"""
+        return [
+            OfficeHistory(
+                dt=datetime.fromisoformat(
+                    f"{random.choice(_office_history_date)} {random.choice(_office_history_time)}"
+                ),
+                count_clients=random.randint(0, 12)
+            )
+            for _ in range(100)
+        ]
 
     @staticmethod
     def __read_input_json():
