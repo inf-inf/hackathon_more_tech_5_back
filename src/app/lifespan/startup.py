@@ -5,7 +5,7 @@ import random
 from statistics import mean
 from typing import TYPE_CHECKING, Any
 
-from src.database.models import ATM, Office, ATMReviews, OfficeReviews, Week
+from src.database.models import ATM, ATMReviews, ATMServices, Currency, Office, OfficeReviews, OfficeServices, Week
 from src.database.base import Base, engine
 
 if TYPE_CHECKING:
