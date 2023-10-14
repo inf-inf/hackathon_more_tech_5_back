@@ -75,8 +75,8 @@ class Office(Base):
     :param longitude: географическая долгота
     :param avg_rating: средний рейтинг офиса
     :param with_ramp: есть ли пандус (True - есть)
-    :param week_info_fiz_id: информация о времени работы отделения для физ. лиц
-    :param week_info_yur_id: информация о времени работы отделения для юр. лиц
+    :param week_info_fiz_id: информация о времени работы отделения для физ. лиц (если None - физ. лица не обслуживаются)
+    :param week_info_yur_id: информация о времени работы отделения для юр. лиц (если None - юр. лица не обслуживаются)
     :param service_info_id: информация о предоставляемых услугах в конкретном офисе
     """
     __tablename__ = "office"
@@ -85,13 +85,13 @@ class Office(Base):
     latitude: Mapped[float] = mapped_column(Float, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
     avg_rating: Mapped[int | None] = mapped_column(Integer)
-    week_info_fiz_id: Mapped[int] = mapped_column(ForeignKey("week.id"), nullable=False)
-    week_info_yur_id: Mapped[int] = mapped_column(ForeignKey("week.id"), nullable=False)
+    week_info_fiz_id: Mapped[int | None] = mapped_column(ForeignKey("week.id"))
+    week_info_yur_id: Mapped[int | None] = mapped_column(ForeignKey("week.id"))
     service_info_id: Mapped[int] = mapped_column(ForeignKey("office_service.id"), nullable=False)
 
     reviews: Mapped[list["OfficeReviews"]] = relationship(back_populates="office")
-    week_info_fiz: Mapped["Week"] = relationship(foreign_keys=[week_info_fiz_id])
-    week_info_yur: Mapped["Week"] = relationship(foreign_keys=[week_info_yur_id])
+    week_info_fiz: Mapped["Week | None"] = relationship(foreign_keys=[week_info_fiz_id])
+    week_info_yur: Mapped["Week | None"] = relationship(foreign_keys=[week_info_yur_id])
     service_info: Mapped["OfficeServices"] = relationship()
 
 
@@ -116,6 +116,8 @@ class OfficeServices(Base):
 
     :param currency_input_id: информация о валюте, которую могут принимать в отделении банка
     :param currency_output_id: информация о валюте, которую могут выдавать в отделении банка
+    :param prime: офис для Prime-лиц
+    :param vip: офис для VIP-лиц
     :param rko: наличие РКО
     :param suo: наличие СУО
     :param kep: есть ли возможность выдать КЭП
@@ -125,6 +127,8 @@ class OfficeServices(Base):
     currency_input_id: Mapped[int] = mapped_column(ForeignKey("currency.id"), nullable=False)
     currency_output_id: Mapped[int] = mapped_column(ForeignKey("currency.id"), nullable=False)
     with_ramp: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false(), nullable=False)
+    prime: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    vip: Mapped[bool] = mapped_column(Boolean, nullable=False)
     rko: Mapped[bool] = mapped_column(Boolean, nullable=False)
     suo: Mapped[bool] = mapped_column(Boolean, nullable=False)
     kep: Mapped[bool] = mapped_column(Boolean, nullable=False)
