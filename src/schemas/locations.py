@@ -111,13 +111,6 @@ class WeekModel(BaseModel):
     sunday: str | None
 
 
-class ReviewsModel(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    rating: int
-    content: str | None
-
-
 class ATMServicesModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -170,3 +163,14 @@ class OfficeModel(BaseModel):
 FindAtmsResponse = list[ATMModel]
 
 FindOfficesResponse = list[OfficeModel]
+
+
+class ReviewsModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    rating: int
+    content: str | None
+
+
+GetATMReviewsResponse = list[ReviewsModel]
+GetOfficeReviewsResponse = list[ReviewsModel]

@@ -2,7 +2,14 @@ from typing import Any, Annotated
 
 from fastapi import APIRouter, Depends, Query
 
-from ..schemas.locations import FindAtmsResponse, FindOfficesResponse, FindAtmsRequest, FindOfficesRequest
+from ..schemas.locations import (
+    FindAtmsResponse,
+    FindOfficesResponse,
+    FindAtmsRequest,
+    FindOfficesRequest,
+    GetATMReviewsResponse,
+    GetOfficeReviewsResponse
+)
 from ..dependencies.logic.locations import get_locations_logic
 from ..dependencies.security.user import get_phone_by_token
 from ..logic.locations import LocationsLogic
@@ -27,6 +34,22 @@ def find_offices(filter_data: Annotated[FindOfficesRequest, Depends()],
                  ) -> list[dict[str, Any]]:
     """Поиск оптимальных отделений с применением фильтров"""
     return logic.find_offices(filter_data.model_dump())
+
+
+@locations_router.get('/get_atm_reviews', response_model=GetATMReviewsResponse, summary='Отзывы о банкомате')
+def get_atm_reviews(atm_id: Annotated[int, Query()],
+                    logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
+                    ) -> list[dict[str, Any]]:
+    """Получить список отзывов о банкомате"""
+    return logic.get_atm_reviews(atm_id)
+
+
+@locations_router.get('/get_office_reviews', response_model=GetOfficeReviewsResponse, summary='Отзывы об отделении')
+def get_office_reviews(office_id: Annotated[int, Query()],
+                       logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
+                       ) -> list[dict[str, Any]]:
+    """Получить список отзывов об отделении банка"""
+    return logic.get_office_reviews(office_id)
 
 
 @locations_router.get('/office_visit/request', summary='Запросить посещение отделения')
