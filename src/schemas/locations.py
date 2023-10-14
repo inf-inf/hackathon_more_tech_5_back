@@ -132,6 +132,7 @@ class ATMServicesModel(BaseModel):
 class ATMModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
+    id: int
     address: str
     latitude: float
     longitude: float
