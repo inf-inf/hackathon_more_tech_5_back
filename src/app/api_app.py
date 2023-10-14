@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from .lifespan import lifespan
 from ..routers import api_routers
+from .middleware.security import add_response_token_header
 
 
 class ApiApp(FastAPI):
@@ -13,6 +14,8 @@ class ApiApp(FastAPI):
             lifespan=lifespan,
             **kwargs
         )
+
+        self.middleware('http')(add_response_token_header)
 
         for router in api_routers:
             self.include_router(router)

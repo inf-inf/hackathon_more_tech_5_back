@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Query
 
 from ..schemas.locations import FindAtmsResponse, FindOfficesResponse, FindAtmsRequest, FindOfficesRequest
 from ..dependencies.logic.locations import get_locations_logic
+from ..dependencies.security.user import check_user_token
 from ..logic.locations import LocationsLogic
 
 locations_router = APIRouter(
@@ -28,7 +29,8 @@ def find_offices(filter_data: Annotated[FindOfficesRequest, Depends()],
     return logic.find_offices(filter_data.model_dump())
 
 
-@locations_router.get('/office_visit/request', summary='Запросить посещение отделения')
+@locations_router.get('/office_visit/request', summary='Запросить посещение отделения',
+                      dependencies=[Depends(check_user_token)])
 def request_office_visit(office_id: Annotated[int, Query(description="Идентификатор отделения банка")],
                          logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
                          ) -> dict[str, Any]:
@@ -39,7 +41,8 @@ def request_office_visit(office_id: Annotated[int, Query(description="Идент
     return logic.request_office_visit(office_id)
 
 
-@locations_router.post('/office_visit/register', summary='Записаться на посещение отделения')
+@locations_router.post('/office_visit/register', summary='Записаться на посещение отделения',
+                       dependencies=[Depends(check_user_token)])
 def register_office_visit(logic: Annotated[LocationsLogic, Depends(get_locations_logic)]) -> dict[str, Any]:
     """Запись в электронную очередь отделения банка
 
