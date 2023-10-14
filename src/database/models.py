@@ -13,6 +13,7 @@ class ATM(Base):
     :param latitude: географическая широта
     :param longitude: географическая долгота
     :param avg_rating: средний рейтинг банкомата
+    :param review_count: количество отзывов
     :param service_info_id: внешний ключ на ATMService (информация о возможностях (услугах) в банкомате
     :param week_info_id: информация о времени работы банкомата по дням недели
     """
@@ -22,6 +23,7 @@ class ATM(Base):
     latitude: Mapped[float] = mapped_column(Float, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
     avg_rating: Mapped[int | None] = mapped_column(Integer)
+    review_count: Mapped[int] = mapped_column(Integer)
     service_info_id: Mapped[int] = mapped_column(ForeignKey("atm_service.id"), nullable=False)
     week_info_id: Mapped[int] = mapped_column(ForeignKey("week.id"), nullable=False)
 
@@ -76,7 +78,7 @@ class Office(Base):
     :param latitude: географическая широта
     :param longitude: географическая долгота
     :param avg_rating: средний рейтинг офиса
-    :param with_ramp: есть ли пандус (True - есть)
+    :param review_count: количество отзывов
     :param week_info_fiz_id: информация о времени работы отделения для физ. лиц (если None - физ. лица не обслуживаются)
     :param week_info_yur_id: информация о времени работы отделения для юр. лиц (если None - юр. лица не обслуживаются)
     :param service_info_id: информация о предоставляемых услугах в конкретном офисе
@@ -87,6 +89,7 @@ class Office(Base):
     latitude: Mapped[float] = mapped_column(Float, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
     avg_rating: Mapped[int | None] = mapped_column(Integer)
+    review_count: Mapped[int] = mapped_column(Integer)
     week_info_fiz_id: Mapped[int | None] = mapped_column(ForeignKey("week.id"))
     week_info_yur_id: Mapped[int | None] = mapped_column(ForeignKey("week.id"))
     service_info_id: Mapped[int] = mapped_column(ForeignKey("office_service.id"), nullable=False)
@@ -118,6 +121,7 @@ class OfficeServices(Base):
 
     :param currency_input_id: информация о валюте, которую могут принимать в отделении банка
     :param currency_output_id: информация о валюте, которую могут выдавать в отделении банка
+    :param with_ramp: есть ли пандус (True - есть)
     :param prime: офис для Prime-лиц
     :param vip: офис для VIP-лиц
     :param rko: наличие РКО
