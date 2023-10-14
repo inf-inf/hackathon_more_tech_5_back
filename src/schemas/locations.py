@@ -1,5 +1,5 @@
 from typing import Literal, Annotated
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from fastapi import Query
 
 
@@ -76,10 +76,6 @@ class AtmServices(BaseModel):
         bool | None,
         Field(description='Работает круглосуточно', examples=['false'])
     ]
-    working_now: Annotated[
-        bool | None,
-        Field(description='Работает сейчас', examples=['true'])
-    ]
     wheelchair: Annotated[
         bool | None,
         Field(description='Доступен для маломобильных граждан', examples=['false'])
@@ -98,17 +94,53 @@ class AtmServices(BaseModel):
     ]
 
 
-class ATMLocation(Location):
-    """Данные по банкомату"""
-    withdraw_currencies: Currencies
-    deposit_currencies: Currencies
-    services: AtmServices
-
-
 class OfficeLocation(Location):
     """Данные по отделению"""
 
 
-FindAtmsResponse = list[ATMLocation]
+class WeekModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    all_time: bool
+    monday: str | None
+    tuesday: str | None
+    wednesday: str | None
+    thursday: str | None
+    friday: str | None
+    saturday: str | None
+    sunday: str | None
+
+
+class ATMReviewsModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    rating: int
+    content: str | None
+
+
+class ATMServicesModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    currency_input: Currencies
+    currency_output: Currencies
+    wheelchair: bool
+    blind: bool
+    nfc: bool
+    qr_code: bool
+
+
+class ATMModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    address: str
+    latitude: float
+    longitude: float
+    avg_rating: int | None
+    reviews: list[ATMReviewsModel]
+    service_info: ATMServicesModel
+    week_info: WeekModel
+
+
+FindAtmsResponse = list[ATMModel]
 
 FindOfficesResponse = list[OfficeLocation]
