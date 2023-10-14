@@ -16,12 +16,12 @@ class LocationFilter(BaseModel):
         Field(Query(description="Долгота пользователя", examples=[37.45707]))
     ]
     initial_latitude: Annotated[
-        float | None,
-        Field(Query(None, alias='initialLatitude', description="Базовая широта пользователя", examples=[55.784435]))
+        float,
+        Field(Query(alias='initialLatitude', description="Базовая широта пользователя", examples=[55.784435]))
     ]
     initial_longitude: Annotated[
-        float | None,
-        Field(Query(None, alias='initialLongitude', description="Базовая долгота пользователя", examples=[37.45707]))
+        float,
+        Field(Query(alias='initialLongitude', description="Базовая долгота пользователя", examples=[37.45707]))
     ]
     zoom: Annotated[
         float,
