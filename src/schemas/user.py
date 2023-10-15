@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal
 from datetime import datetime
 
 from pydantic import BaseModel, Field
@@ -18,3 +18,12 @@ class SendSmsResponse(BaseCamelModel):
 
 class ConfirmSmsRequest(BaseModel):
     code: str
+
+
+class FavoritesAddRequest(BaseCamelModel):
+    location_type: Annotated[
+        Literal['office', 'atm'], Field(alias='type', description='Тип локации: отделение банка или банкомат')
+    ]
+    location_id: Annotated[
+        int, Field(alias='id', description='Идентификатор локации', examples=[657])
+    ]

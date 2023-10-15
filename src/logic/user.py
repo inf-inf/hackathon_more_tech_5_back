@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, Literal, Any
 from datetime import datetime, timedelta
 
 from ..models.sms import SMS, SMSError
@@ -33,3 +33,11 @@ class UserLogic:
         if sms_info['expiration_time'] < datetime.now():
             raise SMSError('Код устарел')
         return self._user_token.set_new_token(sms_info['phone'])
+
+    def favorites_add(self, _location_type: Literal['office', 'atm'], _location_id: int, _user_phone: str) -> bool:
+        """Добавить локацию в избранное"""
+        return True
+
+    def favorites_get(self, _user_phone: str) -> list[dict[str, Any]]:
+        """Получить сохраненные локации"""
+        return []
