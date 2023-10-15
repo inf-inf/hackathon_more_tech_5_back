@@ -110,49 +110,66 @@ class FindOfficesRequest(LocationFilter):
     ]
     avg_service_time: Annotated[
         int | None,
-        Field(None, alias="avgServiceTime", description="Среднее время обслуживания клиента", examples=["4"])
+        Field(
+            Query(
+                None,
+                alias="avgServiceTime",
+                description="Среднее время обслуживания клиента",
+                examples=["4"]
+            )
+        )
     ]
     count_clients_now: Annotated[
         int | None,
         Field(
-            None,
-            alias="countClientsNow",
-            description="Количество клиентов прямо сейчас ожидающих в офисе в очереди",
-            examples=["7"]
+            Query(
+                None,
+                alias="countClientsNow",
+                description="Количество клиентов прямо сейчас ожидающих в офисе в очереди",
+                examples=["7"]
+            )
         )
     ]
     with_ramp: Annotated[
         bool | None,
-        Field(None, alias="withRamp", description="Имеется ли пандус", examples=["true"])
+        Field(Query(None, alias="withRamp", description="Имеется ли пандус", examples=["true"]))
     ]
     prime: Annotated[
         bool | None,
-        Field(None, description="Нужно ли обслуживание PRIME клиентов", examples=["true"])
+        Field(Query(None, description="Нужно ли обслуживание PRIME клиентов", examples=["true"]))
     ]
     vip: Annotated[
         bool | None,
-        Field(None, description="Нужно ли обслуживание VIP клиентов", examples=["true"])
+        Field(Query(None, description="Нужно ли обслуживание VIP клиентов", examples=["true"]))
     ]
     rko: Annotated[
         bool | None,
-        Field(None, description="Нужен ли РКО", examples=["true"])
+        Field(Query(None, description="Нужен ли РКО", examples=["true"]))
     ]
     suo: Annotated[
         bool | None,
-        Field(None, description="Нужен ли СУО", examples=["true"])
+        Field(Query(None, description="Нужен ли СУО", examples=["true"]))
     ]
     kep: Annotated[
         bool | None,
-        Field(None, description="Нужен ли КЭП", examples=["true"])
+        Field(Query(None, description="Нужен ли КЭП", examples=["true"]))
     ]
     withdraw_currencies: Annotated[
         list[str] | None,
-        Field(None, description="Какую валюту нужно вывести", examples=["rub"])
+        Field(Query(None, alias="withdrawCurrencies", description="Какую валюту нужно вывести", examples=["rub"]))
     ]
     deposit_currencies: Annotated[
         list[str] | None,
-        Field(None, description="Какую валюту нужно вывести", examples=["rub, usd"])
+        Field(Query(None, alias="depositCurrencies", description="Какую валюту нужно вывести", examples=["rub, usd"]))
     ]
+
+    @field_serializer('withdraw_currencies')
+    def serialize_withdraw_currencies(self, withdraw_currencies: str | None, _info):
+        return [currency.strip() for currency in withdraw_currencies.split(',')] if withdraw_currencies else None
+
+    @field_serializer('deposit_currencies')
+    def serialize_deposit_currencies(self, deposit_currencies: str | None, _info):
+        return [currency.strip() for currency in deposit_currencies.split(',')] if deposit_currencies else None
 
 
 class Currencies(BaseModel):
