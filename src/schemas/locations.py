@@ -229,15 +229,21 @@ class ATMServicesModel(BaseOrmModel):
 
 
 class ATMModel(BaseOrmModel):
-    id: int
-    distance: float | None = None
-    address: str
-    latitude: float
-    longitude: float
-    avg_rating: int | None = Field(None, alias='avgRating')
-    review_count: int = Field(None, alias='reviewCount')
-    service_info: ATMServicesModel = Field(alias='serviceInfo')
-    week_info: WeekModel = Field(alias='weekInfo')
+    id: Annotated[int, Field(description="id банкомата в системе", examples=["3"])]
+    distance: Annotated[float, Field(description="Расстояние до банкомата от базовых координат", examples=["44.34"])]
+    address: Annotated[str, Field(description="Полный адрес банкомата", examples=["some address"])]
+    latitude: Annotated[float, Field(description="Географическая широта", examples=["33.6556"])]
+    longitude: Annotated[float, Field(description="Географическая долгота", examples=["12.333"])]
+    avg_rating: Annotated[
+        int | None,
+        Field(None, alias="avgRating", description="Средний рейтинг банкомата (от 10 до 50)", examples=["33"])
+    ]
+    review_count: Annotated[
+        int,
+        Field(alias="reviewCount", description="Количество отзывов у банкомата", examples=["7"])
+    ]
+    service_info: Annotated[ATMServicesModel, Field(alias="serviceInfo", description="Возможности банкомата")]
+    week_info: Annotated[WeekModel, Field(alias="weekInfo", description="Время работы банкомата")]
 
     @model_validator(mode="before")
     @classmethod
@@ -248,30 +254,64 @@ class ATMModel(BaseOrmModel):
 
 
 class OfficeServicesModel(BaseOrmModel):
-    currency_input: Currencies = Field(alias='currencyInput')
-    currency_output: Currencies = Field(alias='currencyOutput')
-    with_ramp: bool = Field(alias='withRamp')
-    prime: bool
-    vip: bool
-    rko: bool
-    suo: bool
-    kep: bool
+    currency_input: Annotated[
+        Currencies,
+        Field(alias="currencyInput", description="Информация о валютах, которые могут принимать в офисе")
+    ]
+    currency_output: Annotated[
+        Currencies,
+        Field(alias="currencyOutput", description="Информация о валютах, которые могут выдавать в офисе")
+    ]
+    with_ramp: Annotated[bool, Field( alias="withRamp", description="Имеется ли пандус", examples=["true"])]
+    prime: Annotated[bool, Field(description="Нужно ли обслуживание PRIME клиентов", examples=["true"])]
+    vip: Annotated[bool, Field(description="Нужно ли обслуживание VIP клиентов", examples=["true"])]
+    rko: Annotated[bool, Field(description="Нужен ли РКО", examples=["true"])]
+    suo: Annotated[bool, Field(description="Нужен ли СУО", examples=["true"])]
+    kep: Annotated[bool, Field(description="Нужен ли КЭП", examples=["true"])]
 
 
 class OfficeModel(BaseOrmModel):
-    id: int
-    distance: float
-    address: str
-    latitude: float
-    longitude: float
-    avg_rating: int | None = Field(None, alias='avgRating')
-    review_count: int = Field(alias='reviewCount')
-    avg_service_time: int = Field(alias="avgServiceTime")
-    count_clients_now: int = Field(alias="countClientsNow")
-    time_wait: int = Field(alias="timeWait")
-    week_info_fiz: WeekModel | None = Field(None, alias='weekInfoFiz')
-    week_info_yur: WeekModel | None = Field(None, alias='weekInfoYur')
-    service_info: OfficeServicesModel = Field(alias='serviceInfo')
+    id: Annotated[int, Field(description="id офиса в системе", examples=["3"])]
+    distance: Annotated[float, Field(description="Расстояние до офиса от базовых координат", examples=["44.34"])]
+    address: Annotated[str, Field(description="Полный адрес офиса", examples=["some address"])]
+    latitude: Annotated[float, Field(description="Географическая широта", examples=["33.6556"])]
+    longitude: Annotated[float, Field(description="Географическая долгота", examples=["27.4551"])]
+    avg_rating: Annotated[
+        int | None,
+        Field(None, alias="avgRating", description="Средний рейтинг офиса (от 10 до 50)", examples=["33"])
+    ]
+    review_count: Annotated[
+        int,
+        Field(alias="reviewCount", description="Количество отзывов у офиса", examples=["7"])
+    ]
+    avg_service_time: Annotated[
+        int,
+        Field(alias="avgServiceTime", description="Среднее время обслуживания в офисе", examples=["6"])
+    ]
+    count_clients_now: Annotated[
+        int,
+        Field(alias="countClientsNow", description="Количество клиентов в офисе на данный момент", examples=["4"])
+    ]
+    time_wait: Annotated[
+        int,
+        Field(
+            alias="timeWait",
+            description="Примерно время до получения услуги (с учетом расстояния и уже имеющихся клиентов в офисе)",
+            examples=["120"]
+        )
+    ]
+    week_info_fiz: Annotated[
+        WeekModel | None,
+        Field(None, alias="weekInfoFiz", description="Время работы офиса для физ. лиц")
+    ]
+    week_info_yur: Annotated[
+        WeekModel | None,
+        Field(None, alias="weekInfoYur", description="Время работы офиса для юр. лиц")
+    ]
+    service_info: Annotated[
+        OfficeServicesModel,
+        Field(alias="serviceInfo", description="Виды предоставляемых услуг в офисе")
+    ]
 
     @model_validator(mode="before")
     @classmethod
@@ -287,8 +327,8 @@ FindOfficesResponse = list[OfficeModel]
 
 
 class ReviewsModel(BaseOrmModel):
-    rating: int
-    content: str | None
+    rating: Annotated[int, Field(description="Рейтинг отзыва", examples=["35"])]
+    content: Annotated[str | None, Field(description="Текст отзыва", examples=["some text"])]
 
 
 GetATMReviewsResponse = list[ReviewsModel]
