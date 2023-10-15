@@ -22,8 +22,14 @@ class LocationsLogic:
         get_reviews = location_types_mapping[location_type]
         return get_reviews(self._db, location_id)
 
-    def post_office_review(self, _phone: str, _office_id: int, _review: str) -> bool:
-        return True
+    def post_location_review(self,
+                             _phone: str,
+                             _location_type: Literal['atm', 'office'],
+                             _location_id: int,
+                             _review: str,
+                             _stars: int
+                             ) -> None:
+        """Сохранение отзыва об отделении банка или банкомате"""
 
     def request_office_visit(self, _office_id: int) -> dict[str, bool]:
         return {'9:00': False, '9:15': True, '9:30': False}

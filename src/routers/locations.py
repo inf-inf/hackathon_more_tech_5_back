@@ -8,6 +8,8 @@ from ..schemas.locations import (
     FindAtmsRequest,
     FindOfficesRequest,
     GetReviewsResponse,
+    PostReviewRequest,
+    PostReviewResponse,
 )
 from ..dependencies.logic.locations import get_locations_logic
 from ..dependencies.security.user import get_phone_by_token
@@ -45,16 +47,19 @@ def get_atm_reviews(location_type: Annotated[Literal['atm', 'office'], Path()],
     return logic.get_location_reviews(location_type, location_id)
 
 
-@locations_router.post('/office_reviews/post', summary='Отправить отзыв об отделении')
-def register_office_visit(logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
+@locations_router.post('/reviews/{location_type}/post',response_model=PostReviewResponse,
+                       summary='Отправить отзыв о банкомате или отделении')
+def register_office_visit(data: PostReviewRequest,
+                          location_type: Annotated[Literal['atm', 'office'], Path()],
+                          logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
                           user_phone: Annotated[str, Depends(get_phone_by_token)],
                           ) -> dict[str, Any]:
-    """Сохранение отзыва об отделении банка
+    """Сохранение отзыва об отделении банка или банкомате
 
     Функционал доступен авторизованным клиентам банка, либо пользователям,
     прошедшим процедуру подтверждения личности (смс, vk, ...)
     """
-    logic.post_office_review(user_phone, 1, '')
+    logic.post_location_review(user_phone, location_type, data.location_id, data.review, data.stars)
     return {'msg': 'Ваш отзыв отправлен на модерацию'}
 
 

@@ -309,3 +309,13 @@ class ReviewsModel(BaseOrmModel):
 
 
 GetReviewsResponse = list[ReviewsModel]
+
+
+class PostReviewRequest(BaseModel):
+    location_id: int
+    review: Annotated[str, Field(max_length=500, description='Отзыв')]
+    stars: Annotated[int, Field(ge=1, le=5, description='Количество звезд (от 1 до 5)')]
+
+
+class PostReviewResponse(BaseModel):
+    msg: str = 'Ваш отзыв отправлен на модерацию'
