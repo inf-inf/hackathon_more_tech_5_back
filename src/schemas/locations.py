@@ -197,12 +197,15 @@ class OfficeServicesModel(BaseOrmModel):
 
 class OfficeModel(BaseOrmModel):
     id: int
-    distance: float | None = None
+    distance: float
     address: str
     latitude: float
     longitude: float
     avg_rating: int | None = Field(None, alias='avgRating')
     review_count: int = Field(alias='reviewCount')
+    avg_service_time: int = Field(alias="avgServiceTime")
+    count_clients_now: int = Field(alias="countClientsNow")
+    time_wait: int = Field(alias="timeWait")
     week_info_fiz: WeekModel | None = Field(None, alias='weekInfoFiz')
     week_info_yur: WeekModel | None = Field(None, alias='weekInfoYur')
     service_info: OfficeServicesModel = Field(alias='serviceInfo')
@@ -210,8 +213,9 @@ class OfficeModel(BaseOrmModel):
     @model_validator(mode="before")
     @classmethod
     def _check_distance(cls, data: Any) -> Any:
-        if hasattr(data, "Office") and hasattr(data, "distance"):
+        if hasattr(data, "Office") and hasattr(data, "distance") and hasattr(data, "time_wait"):
             data.Office.distance = data.distance
+            data.Office.time_wait = data.time_wait
         return data.Office
 
 

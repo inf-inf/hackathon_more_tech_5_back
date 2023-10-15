@@ -10,7 +10,7 @@ _EARTH_RADIUS = 6371  # примерный радиус Земли в км
 def _zoom_mapper(zoom: float) -> float:
     """TODO: временное решение, для оптимизации возвращаемых точек
 
-    :param zoom: приблежение на карте
+    :param zoom: приближение на карте
     """
     if zoom < 10:
         radius = 999999.0
@@ -89,7 +89,8 @@ def get_offices_filtered(db: Session, filter_data):
             func.sin(func.radians(models.Office.latitude)) * func.sin(func.radians(filter_data["initial_latitude"])) +
             func.cos(func.radians(models.Office.latitude)) * func.cos(func.radians(filter_data["initial_latitude"])) *
             func.cos(func.radians(models.Office.longitude) - func.radians(filter_data["initial_longitude"]))
-        ) * _EARTH_RADIUS).label("distance")
+        ) * _EARTH_RADIUS).label("distance"),
+        (models.Office.avg_service_time * models.Office.count_clients_now).label("time_wait")
     ).where(
         (func.acos(
             func.sin(func.radians(models.Office.latitude)) * func.sin(func.radians(filter_data["latitude"])) +

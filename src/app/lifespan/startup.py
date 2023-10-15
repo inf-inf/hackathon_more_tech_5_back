@@ -130,6 +130,8 @@ class StartupEvent:
                 avg_rating=avg_rating,
                 reviews=reviews,
                 review_count=review_count,
+                avg_service_time=random.randint(3, 15),
+                count_clients_now=random.randint(0, 10),
                 week_info_fiz=week_info_fiz,
                 week_info_yur=week_info_yur,
                 service_info=OfficeServices(
