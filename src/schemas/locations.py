@@ -104,6 +104,55 @@ class FindAtmsRequest(LocationFilter):
 
 class FindOfficesRequest(LocationFilter):
     """Фильтры для поиска отделений"""
+    avg_rating: Annotated[
+        int | None,
+        Field(None, alias="avgRating", description="Средний рейтинг офиса (от 10 до 50)", examples=["44"])
+    ]
+    avg_service_time: Annotated[
+        int | None,
+        Field(None, alias="avgServiceTime", description="Среднее время обслуживания клиента", examples=["4"])
+    ]
+    count_clients_now: Annotated[
+        int | None,
+        Field(
+            None,
+            alias="countClientsNow",
+            description="Количество клиентов прямо сейчас ожидающих в офисе в очереди",
+            examples=["7"]
+        )
+    ]
+    with_ramp: Annotated[
+        bool | None,
+        Field(None, alias="withRamp", description="Имеется ли пандус", examples=["true"])
+    ]
+    prime: Annotated[
+        bool | None,
+        Field(None, description="Нужно ли обслуживание PRIME клиентов", examples=["true"])
+    ]
+    vip: Annotated[
+        bool | None,
+        Field(None, description="Нужно ли обслуживание VIP клиентов", examples=["true"])
+    ]
+    rko: Annotated[
+        bool | None,
+        Field(None, description="Нужен ли РКО", examples=["true"])
+    ]
+    suo: Annotated[
+        bool | None,
+        Field(None, description="Нужен ли СУО", examples=["true"])
+    ]
+    kep: Annotated[
+        bool | None,
+        Field(None, description="Нужен ли КЭП", examples=["true"])
+    ]
+    withdraw_currencies: Annotated[
+        list[str] | None,
+        Field(None, description="Какую валюту нужно вывести", examples=["rub"])
+    ]
+    deposit_currencies: Annotated[
+        list[str] | None,
+        Field(None, description="Какую валюту нужно вывести", examples=["rub, usd"])
+    ]
 
 
 class Currencies(BaseModel):
