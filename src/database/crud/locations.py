@@ -1,5 +1,5 @@
 from typing import TypedDict
-from sqlalchemy import select, func
+from sqlalchemy import Integer, select, func, asc
 from sqlalchemy.orm import Session
 
 from .. import models
@@ -77,26 +77,36 @@ def get_atms_filtered(db: Session, filter_data: FindATMFilter):
         models.Week, models.ATM.week_info_id == models.Week.id
     ).join(
         models.ATMServices, models.ATM.service_info_id == models.ATMServices.id
+    ).order_by(
+        asc("distance")
     )
     return db.execute(stmt).all()
 
 
 def get_offices_filtered(db: Session, filter_data):
     radius_search = _zoom_mapper(filter_data["zoom"])
-    stmt = select(
-        models.Office,
-        (func.acos(
+    distance = (
+        func.acos(
             func.sin(func.radians(models.Office.latitude)) * func.sin(func.radians(filter_data["initial_latitude"])) +
             func.cos(func.radians(models.Office.latitude)) * func.cos(func.radians(filter_data["initial_latitude"])) *
             func.cos(func.radians(models.Office.longitude) - func.radians(filter_data["initial_longitude"]))
-        ) * _EARTH_RADIUS).label("distance"),
-        (models.Office.avg_service_time * models.Office.count_clients_now).label("time_wait")
+        ) * _EARTH_RADIUS
+    ).label("distance")
+
+    stmt = select(
+        models.Office,
+        distance,
+        (
+            func.cast(distance + models.Office.avg_service_time * models.Office.count_clients_now, Integer)
+        ).label("time_wait")
     ).where(
         (func.acos(
             func.sin(func.radians(models.Office.latitude)) * func.sin(func.radians(filter_data["latitude"])) +
             func.cos(func.radians(models.Office.latitude)) * func.cos(func.radians(filter_data["latitude"])) *
             func.cos(func.radians(models.Office.longitude) - func.radians(filter_data["longitude"]))
         ) * _EARTH_RADIUS) <= radius_search,
+    ).order_by(
+        asc("time_wait")
     )
     return db.execute(stmt).all()
 
