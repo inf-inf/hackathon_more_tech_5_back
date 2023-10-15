@@ -79,6 +79,8 @@ class Office(Base):
     :param longitude: географическая долгота
     :param avg_rating: средний рейтинг офиса
     :param review_count: количество отзывов
+    :param avg_service_time: среднее время обслуживания клиента (обновляется по статистике (раз в какое-то время))
+    :param count_clients_now: количество клиентов, которые сейчас в офисе (обновляется по событию)
     :param week_info_fiz_id: информация о времени работы отделения для физ. лиц (если None - физ. лица не обслуживаются)
     :param week_info_yur_id: информация о времени работы отделения для юр. лиц (если None - юр. лица не обслуживаются)
     :param service_info_id: информация о предоставляемых услугах в конкретном офисе
@@ -90,6 +92,8 @@ class Office(Base):
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
     avg_rating: Mapped[int | None] = mapped_column(Integer)
     review_count: Mapped[int] = mapped_column(Integer)
+    avg_service_time: Mapped[int] = mapped_column(Integer)
+    count_clients_now: Mapped[int] = mapped_column(Integer)
     week_info_fiz_id: Mapped[int | None] = mapped_column(ForeignKey("week.id"))
     week_info_yur_id: Mapped[int | None] = mapped_column(ForeignKey("week.id"))
     service_info_id: Mapped[int] = mapped_column(ForeignKey("office_service.id"), nullable=False)
