@@ -33,14 +33,17 @@ def _zoom_mapper(zoom: float) -> float:
     return radius
 
 
-class FindATMFilter(TypedDict):
+class BaseFilter(TypedDict):
     latitude: float
     longitude: float
     initial_latitude: float | None
     initial_longitude: float | None
     zoom: float
-    all_day: bool | None
     avg_rating: int | None
+
+
+class FindATMFilter(BaseFilter):
+    all_day: bool | None
     wheelchair: bool | None
     blind: bool | None
     nfc_support: bool | None
@@ -49,8 +52,21 @@ class FindATMFilter(TypedDict):
     deposit_currencies: list[str] | None
 
 
+class FindOfficesFilter(BaseFilter):
+    avg_service_time: int | None
+    count_clients_now: int | None
+    with_ramp: bool | None
+    prime: bool | None
+    vip: bool | None
+    rko: bool | None
+    suo: bool | None
+    kep: bool | None
+    withdraw_currencies: list[str] | None
+    deposit_currencies: list[str] | None
+
+
 def get_atms_filtered(db: Session, filter_data: FindATMFilter):
-    # TODO Добавить withdraw_currencies, deposit_currencies, ограничение числа точек в завис. от координат
+    # TODO Добавить withdraw_currencies, deposit_currencies
     radius_search = _zoom_mapper(filter_data["zoom"])
     stmt = select(
         models.ATM,
@@ -83,7 +99,7 @@ def get_atms_filtered(db: Session, filter_data: FindATMFilter):
     return db.execute(stmt).all()
 
 
-def get_offices_filtered(db: Session, filter_data):
+def get_offices_filtered(db: Session, filter_data: FindOfficesFilter):
     radius_search = _zoom_mapper(filter_data["zoom"])
     distance = (
         func.acos(

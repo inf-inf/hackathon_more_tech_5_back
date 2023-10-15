@@ -10,7 +10,7 @@ class LocationsLogic:
     def find_atms(self, filter_data: locations_crud.FindATMFilter):
         return locations_crud.get_atms_filtered(self._db, filter_data)
 
-    def find_offices(self, filter_data):
+    def find_offices(self, filter_data: locations_crud.FindOfficesFilter):
         return locations_crud.get_offices_filtered(self._db, filter_data)
 
     def get_atm_reviews(self, atm_id: int):
