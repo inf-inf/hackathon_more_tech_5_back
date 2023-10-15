@@ -189,6 +189,7 @@ class WeekModel(BaseOrmModel):
     days: Annotated[
         list[str | None],
         Field(
+            None,
             description="Список времени работы по дням недели (0 элемент - понедельник, 7 элемент - воскресенье",
             examples=['["09:00-17:00", "09:00-17:00", "09:00-17:00", "09:00-17:00", "09:00-17:00", null, null]']
         )
@@ -204,6 +205,12 @@ class WeekModel(BaseOrmModel):
                          data.saturday, data.sunday]
             }
         return data
+
+    @model_validator(mode="after")
+    def _check_nones(self) -> 'WeekModel | None':
+        if not any([self.all_time, *self.days]):
+            return None
+        return self
 
 
 class ATMServicesModel(BaseOrmModel):
