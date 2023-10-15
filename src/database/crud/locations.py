@@ -10,7 +10,7 @@ _EARTH_RADIUS = 6371  # примерный радиус Земли в км
 def _zoom_mapper(zoom: float) -> float:
     """TODO: временное решение, для оптимизации возвращаемых точек
 
-    :param zoom: приблежение на карте
+    :param zoom: приближение на карте
     """
     if zoom < 10:
         radius = 999999.0
