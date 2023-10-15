@@ -92,9 +92,9 @@ def get_offices_filtered(db: Session, filter_data):
         ) * _EARTH_RADIUS).label("distance")
     ).where(
         (func.acos(
-            func.sin(func.radians(models.ATM.latitude)) * func.sin(func.radians(filter_data["latitude"])) +
-            func.cos(func.radians(models.ATM.latitude)) * func.cos(func.radians(filter_data["latitude"])) *
-            func.cos(func.radians(models.ATM.longitude) - func.radians(filter_data["longitude"]))
+            func.sin(func.radians(models.Office.latitude)) * func.sin(func.radians(filter_data["latitude"])) +
+            func.cos(func.radians(models.Office.latitude)) * func.cos(func.radians(filter_data["latitude"])) *
+            func.cos(func.radians(models.Office.longitude) - func.radians(filter_data["longitude"]))
         ) * _EARTH_RADIUS) <= radius_search,
     )
     return db.execute(stmt).all()
