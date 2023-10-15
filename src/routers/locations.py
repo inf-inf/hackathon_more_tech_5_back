@@ -44,12 +44,25 @@ def get_atm_reviews(atm_id: Annotated[int, Query(alias='atmId')],
     return logic.get_atm_reviews(atm_id)
 
 
-@locations_router.get('/get_office_reviews', response_model=GetOfficeReviewsResponse, summary='Отзывы об отделении')
+@locations_router.get('/office_reviews/get', response_model=GetOfficeReviewsResponse, summary='Отзывы об отделении')
 def get_office_reviews(office_id: Annotated[int, Query(alias='officeId')],
                        logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
                        ) -> list[dict[str, Any]]:
     """Получить список отзывов об отделении банка"""
     return logic.get_office_reviews(office_id)
+
+
+@locations_router.post('/office_reviews/post', summary='Отправить отзыв об отделении')
+def register_office_visit(logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
+                          user_phone: Annotated[str, Depends(get_phone_by_token)],
+                          ) -> dict[str, Any]:
+    """Сохранение отзыва об отделении банка
+
+    Функционал доступен авторизованным клиентам банка, либо пользователям,
+    прошедшим процедуру подтверждения личности (смс, vk, ...)
+    """
+    logic.post_office_review(user_phone, 1, '')
+    return {'msg': 'Ваш отзыв отправлен на модерацию'}
 
 
 @locations_router.get('/office_visit/request', summary='Запросить посещение отделения')

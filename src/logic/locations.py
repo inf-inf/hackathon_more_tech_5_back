@@ -19,6 +19,9 @@ class LocationsLogic:
     def get_office_reviews(self, office_id: int):
         return locations_crud.get_office_reviews(self._db, office_id)
 
+    def post_office_review(self, _phone: str, _office_id: int, _review: str) -> bool:
+        return True
+
     def request_office_visit(self, _office_id: int) -> dict[str, bool]:
         return {'9:00': False, '9:15': True, '9:30': False}
 
