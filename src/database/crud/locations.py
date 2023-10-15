@@ -66,7 +66,7 @@ class FindOfficesFilter(BaseFilter):
 
 
 def get_atms_filtered(db: Session, filter_data: FindATMFilter):
-    # TODO Добавить withdraw_currencies, deposit_currencies
+    # TODO Добавить filter withdraw_currencies, deposit_currencies
     radius_search = _zoom_mapper(filter_data["zoom"])
     stmt = select(
         models.ATM,
@@ -100,6 +100,7 @@ def get_atms_filtered(db: Session, filter_data: FindATMFilter):
 
 
 def get_offices_filtered(db: Session, filter_data: FindOfficesFilter):
+    # TODO Добавить filter withdraw_currencies, deposit_currencies
     radius_search = _zoom_mapper(filter_data["zoom"])
     distance = (
         func.acos(
@@ -121,6 +122,18 @@ def get_offices_filtered(db: Session, filter_data: FindOfficesFilter):
             func.cos(func.radians(models.Office.latitude)) * func.cos(func.radians(filter_data["latitude"])) *
             func.cos(func.radians(models.Office.longitude) - func.radians(filter_data["longitude"]))
         ) * _EARTH_RADIUS) <= radius_search,
+        models.Office.avg_rating.is_not(None) if filter_data["avg_rating"] else True,
+        models.Office.avg_rating >= filter_data["avg_rating"] if filter_data["avg_rating"] else True,
+        models.Office.avg_service_time <= filter_data["avg_service_time"] if filter_data["avg_service_time"] else True,
+        models.Office.count_clients_now <= filter_data["count_clients_now"] if filter_data["count_clients_now"] else True,
+        models.OfficeServices.with_ramp == filter_data["with_ramp"] if filter_data["with_ramp"] else True,
+        models.OfficeServices.prime == filter_data["prime"] if filter_data["prime"] else True,
+        models.OfficeServices.vip == filter_data["vip"] if filter_data["vip"] else True,
+        models.OfficeServices.rko == filter_data["rko"] if filter_data["rko"] else True,
+        models.OfficeServices.suo == filter_data["suo"] if filter_data["suo"] else True,
+        models.OfficeServices.suo == filter_data["kep"] if filter_data["kep"] else True,
+    ).join(
+        models.OfficeServices, models.OfficeServices.id == models.Office.service_info_id
     ).order_by(
         asc("time_wait")
     )
