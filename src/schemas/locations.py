@@ -8,6 +8,7 @@ from ..database.models import Week
 
 
 class LocationFilter(BaseModel):
+    """Базовая информация по расположению пользователя"""
     latitude: Annotated[
         float,
         Field(Query(description="Широта пользователя", examples=[55.784435]))
@@ -173,35 +174,14 @@ class FindOfficesRequest(LocationFilter):
 
 
 class Currencies(BaseModel):
+    """Валюты, доступные в конкретной локации"""
     usd: Annotated[bool, Field(description="Доллары", examples=['false'])]
     eur: Annotated[bool, Field(description="Евро", examples=['false'])]
     rub: Annotated[bool, Field(description="Рубли", examples=['true'])]
 
 
-class AtmServices(BaseModel):
-    all_day: Annotated[
-        bool | None,
-        Field(alias='allDay', description='Работает круглосуточно', examples=['false'])
-    ]
-    wheelchair: Annotated[
-        bool | None,
-        Field(description='Доступен для маломобильных граждан', examples=['false'])
-    ]
-    blind: Annotated[
-        bool | None,
-        Field(description='Оборудован для слабовидящих', examples=['false'])
-    ]
-    nfc_support: Annotated[
-        bool | None,
-        Field(alias='nfcSupport', description='Поддержка NFC (бесконтактное обслуживание)', examples=['true'])
-    ]
-    qr_support: Annotated[
-        bool | None,
-        Field(alias='qrSupport', description='Поддержка QR-кода', examples=['false'])
-    ]
-
-
 class WeekModel(BaseOrmModel):
+    """Рабочее время"""
     all_time: Annotated[bool, Field(alias="allTime", description="Работает ли круглосуточно", examples=["false"])]
     days: Annotated[
         list[str | None],
@@ -231,6 +211,7 @@ class WeekModel(BaseOrmModel):
 
 
 class ATMServicesModel(BaseOrmModel):
+    """Доступные услуги в банкомате"""
     currency_input: Annotated[
         Currencies,
         Field(alias="currencyInput", description="Информация о валютах, которые может принимать банкомат")
@@ -246,6 +227,7 @@ class ATMServicesModel(BaseOrmModel):
 
 
 class ATMModel(BaseOrmModel):
+    """Информация о банкомате"""
     id: Annotated[int, Field(description="id банкомата в системе", examples=["3"])]
     distance: Annotated[float, Field(description="Расстояние до банкомата от базовых координат", examples=["44.34"])]
     address: Annotated[str, Field(description="Полный адрес банкомата", examples=["some address"])]
@@ -271,6 +253,7 @@ class ATMModel(BaseOrmModel):
 
 
 class OfficeServicesModel(BaseOrmModel):
+    """Доступные услуги в отделении банка"""
     currency_input: Annotated[
         Currencies,
         Field(alias="currencyInput", description="Информация о валютах, которые могут принимать в офисе")
@@ -288,6 +271,7 @@ class OfficeServicesModel(BaseOrmModel):
 
 
 class OfficeModel(BaseOrmModel):
+    """Информация об отделении банка"""
     id: Annotated[int, Field(description="id офиса в системе", examples=["3"])]
     distance: Annotated[float, Field(description="Расстояние до офиса от базовых координат", examples=["44.34"])]
     address: Annotated[str, Field(description="Полный адрес офиса", examples=["some address"])]
@@ -344,6 +328,7 @@ FindOfficesResponse = list[OfficeModel]
 
 
 class ReviewsModel(BaseOrmModel):
+    """Отзыв о банкомате или отделении"""
     rating: Annotated[int, Field(description="Рейтинг отзыва", examples=["35"])]
     content: Annotated[str | None, Field(description="Текст отзыва", examples=["some text"])]
 
@@ -352,9 +337,10 @@ GetReviewsResponse = list[ReviewsModel]
 
 
 class PostReviewRequest(BaseModel):
-    location_id: int
-    review: Annotated[str, Field(max_length=500, description='Отзыв')]
-    stars: Annotated[int, Field(ge=1, le=5, description='Количество звезд (от 1 до 5)')]
+    """Новый отзыв о банкомате или отделении"""
+    location_id: Annotated[int, Field(description='Идентификатор локации (отделение или банкомат)', examples=[12])]
+    review: Annotated[str, Field(max_length=500, description='Отзыв', examples=['Быстрое обслуживание'])]
+    stars: Annotated[int, Field(ge=1, le=5, description='Количество звезд (от 1 до 5)', examples=[5])]
 
 
 class PostReviewResponse(BaseModel):

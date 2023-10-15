@@ -7,6 +7,7 @@ from .base import BaseOrmModel
 
 
 class OfficeHistoryModel(BaseOrmModel):
+    """Загруженность банка в конкретное время"""
     dt: Annotated[
         datetime,
         Field(description="Время, за которое вычисляется количество клиентов в офисе", examples=["2023-10-15 06:00:00"])
