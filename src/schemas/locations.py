@@ -106,9 +106,9 @@ class FindOfficesRequest(LocationFilter):
 
 
 class Currencies(BaseModel):
-    usd: bool
-    eur: bool
-    rub: bool
+    usd: Annotated[bool, Field(description="Доллары", examples=['false'])]
+    eur: Annotated[bool, Field(description="Евро", examples=['false'])]
+    rub: Annotated[bool, Field(description="Рубли", examples=['true'])]
 
 
 class AtmServices(BaseModel):
@@ -135,23 +135,29 @@ class AtmServices(BaseModel):
 
 
 class WeekModel(BaseOrmModel):
-    all_time: bool = Field(alias='allTime')
-    monday: str | None
-    tuesday: str | None
-    wednesday: str | None
-    thursday: str | None
-    friday: str | None
-    saturday: str | None
-    sunday: str | None
+    all_time: Annotated[bool, Field(alias="allTime", description="Работает ли круглосуточно", examples=["false"])]
+    monday: Annotated[str | None, Field(description="Время работы в понедельник", examples=["08:00-01:00"])]
+    tuesday: Annotated[str | None, Field(description="Время работы во вторник", examples=["10:00-01:00"])]
+    wednesday: Annotated[str | None, Field(description="Время работы в среду", examples=["09:00-21:30"])]
+    thursday: Annotated[str | None, Field(description="Время работы в четверг", examples=["10:00-21:45"])]
+    friday: Annotated[str | None, Field(description="Время работы в пятницу", examples=["10:00-23:00"])]
+    saturday: Annotated[str | None, Field(description="Время работы в субботу", examples=["06:00-21:30"])]
+    sunday: Annotated[str | None, Field(description="Время работы в воскресенье", examples=["null"])]
 
 
 class ATMServicesModel(BaseOrmModel):
-    currency_input: Currencies = Field(alias='currencyInput')
-    currency_output: Currencies = Field(alias='currencyOutput')
-    wheelchair: bool
-    blind: bool
-    nfc: bool
-    qr_code: bool = Field(alias='qrCode')
+    currency_input: Annotated[
+        Currencies,
+        Field(alias="currencyInput", description="Информация о валютах, которые может принимать банкомат")
+    ]
+    currency_output: Annotated[
+        Currencies,
+        Field(alias="currencyOutput", description="Информация о валютах, которые может выдавать банкомат")
+    ]
+    wheelchair: Annotated[bool, Field(description="Доступен для маломобильных граждан", examples=["true"])]
+    blind: Annotated[bool, Field(description="Оборудован для слабовидящих", examples=["true"])]
+    nfc: Annotated[bool, Field(description="Поддержка NFC (бесконтактное обслуживание)", examples=["true"])]
+    qr_code: Annotated[bool, Field(alias='qrCode', description="Поддержка работы с QR-кодами", examples=["true"])]
 
 
 class ATMModel(BaseOrmModel):
