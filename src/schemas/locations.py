@@ -101,7 +101,6 @@ class FindAtmsRequest(LocationFilter):
         return [currency.strip() for currency in deposit_currencies.split(',')] if deposit_currencies else None
 
 
-
 class FindOfficesRequest(LocationFilter):
     """Фильтры для поиска отделений"""
 

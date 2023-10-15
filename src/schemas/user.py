@@ -3,12 +3,14 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
+from .base import BaseCamelModel
+
 
 class SendSmsRequest(BaseModel):
     phone: str
 
 
-class SendSmsResponse(BaseModel):
+class SendSmsResponse(BaseCamelModel):
     phone: str
     sent_time: Annotated[datetime, Field(alias='sentTime')]
     expiration_time: Annotated[datetime, Field(alias='expirationTime')]

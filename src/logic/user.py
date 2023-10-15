@@ -1,7 +1,7 @@
 from typing import TypedDict
 from datetime import datetime, timedelta
 
-from ..models.sms import SMS
+from ..models.sms import SMS, SMSError
 from ..models.security import UserToken
 
 
@@ -24,11 +24,12 @@ class UserLogic:
         self._sms.send(phone, code)
         sent_time = datetime.now()
         sms_info = SentSmsInfo(phone=phone, sent_time=sent_time, expiration_time=sent_time + self._sms_lifetime)
-        # TODO save sms_info
+        self._sms.save_sms(code, sms_info)
         return sms_info
 
     def confirm_sms(self, code: str) -> str:
         """Подтвердить номер по коду из смс"""
-        # TODO get sms_info from cache
-        phone = '123'
-        return self._user_token.set_new_token(phone)
+        sms_info: SentSmsInfo = self._sms.get_sms(code)
+        if sms_info['expiration_time'] < datetime.now():
+            raise SMSError('Код устарел')
+        return self._user_token.set_new_token(sms_info['phone'])
