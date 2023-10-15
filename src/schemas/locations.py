@@ -105,13 +105,6 @@ class FindOfficesRequest(LocationFilter):
     """Фильтры для поиска отделений"""
 
 
-class Location(BaseModel):
-    address: str
-    latitude: float
-    longitude: float
-    distance: int
-
-
 class Currencies(BaseModel):
     usd: bool
     eur: bool
@@ -139,10 +132,6 @@ class AtmServices(BaseModel):
         bool | None,
         Field(alias='qrSupport', description='Поддержка QR-кода', examples=['false'])
     ]
-
-
-class OfficeLocation(Location):
-    """Данные по отделению"""
 
 
 class WeekModel(BaseOrmModel):
