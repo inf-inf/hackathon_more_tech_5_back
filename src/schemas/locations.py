@@ -308,5 +308,4 @@ class ReviewsModel(BaseOrmModel):
     content: str | None
 
 
-GetATMReviewsResponse = list[ReviewsModel]
-GetOfficeReviewsResponse = list[ReviewsModel]
+GetReviewsResponse = list[ReviewsModel]

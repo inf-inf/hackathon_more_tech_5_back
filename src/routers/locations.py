@@ -1,14 +1,13 @@
-from typing import Any, Annotated
+from typing import Any, Annotated, Literal
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Path
 
 from ..schemas.locations import (
     FindAtmsResponse,
     FindOfficesResponse,
     FindAtmsRequest,
     FindOfficesRequest,
-    GetATMReviewsResponse,
-    GetOfficeReviewsResponse
+    GetReviewsResponse,
 )
 from ..dependencies.logic.locations import get_locations_logic
 from ..dependencies.security.user import get_phone_by_token
@@ -36,20 +35,14 @@ def find_offices(filter_data: Annotated[FindOfficesRequest, Depends()],
     return logic.find_offices(filter_data.model_dump())
 
 
-@locations_router.get('/get_atm_reviews', response_model=GetATMReviewsResponse, summary='Отзывы о банкомате')
-def get_atm_reviews(atm_id: Annotated[int, Query(alias='atmId')],
+@locations_router.get('/reviews/{location_type}/get', response_model=GetReviewsResponse,
+                      summary='Отзывы о банкомате или отделении')
+def get_atm_reviews(location_type: Annotated[Literal['atm', 'office'], Path()],
+                    location_id: Annotated[int, Query(alias='id')],
                     logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
                     ) -> list[dict[str, Any]]:
-    """Получить список отзывов о банкомате"""
-    return logic.get_atm_reviews(atm_id)
-
-
-@locations_router.get('/office_reviews/get', response_model=GetOfficeReviewsResponse, summary='Отзывы об отделении')
-def get_office_reviews(office_id: Annotated[int, Query(alias='officeId')],
-                       logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
-                       ) -> list[dict[str, Any]]:
-    """Получить список отзывов об отделении банка"""
-    return logic.get_office_reviews(office_id)
+    """Получить список отзывов о банкомате или отделении банка"""
+    return logic.get_location_reviews(location_type, location_id)
 
 
 @locations_router.post('/office_reviews/post', summary='Отправить отзыв об отделении')

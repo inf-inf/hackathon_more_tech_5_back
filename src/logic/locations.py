@@ -1,3 +1,4 @@
+from typing import Literal
 from sqlalchemy.orm import Session
 from ..database.crud import locations as locations_crud
 
@@ -13,11 +14,13 @@ class LocationsLogic:
     def find_offices(self, filter_data: locations_crud.FindOfficesFilter):
         return locations_crud.get_offices_filtered(self._db, filter_data)
 
-    def get_atm_reviews(self, atm_id: int):
-        return locations_crud.get_atm_reviews(self._db, atm_id)
-
-    def get_office_reviews(self, office_id: int):
-        return locations_crud.get_office_reviews(self._db, office_id)
+    def get_location_reviews(self, location_type: Literal['atm', 'office'], location_id: int):
+        location_types_mapping = {
+            'atm': locations_crud.get_atm_reviews,
+            'office': locations_crud.get_office_reviews
+        }
+        get_reviews = location_types_mapping[location_type]
+        return get_reviews(self._db, location_id)
 
     def post_office_review(self, _phone: str, _office_id: int, _review: str) -> bool:
         return True
