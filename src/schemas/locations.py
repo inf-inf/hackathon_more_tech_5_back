@@ -4,6 +4,7 @@ from fastapi import Query
 from pydantic import BaseModel, Field, model_validator, field_serializer
 
 from .base import BaseOrmModel
+from ..database.models import Week
 
 
 class LocationFilter(BaseModel):
@@ -136,13 +137,24 @@ class AtmServices(BaseModel):
 
 class WeekModel(BaseOrmModel):
     all_time: Annotated[bool, Field(alias="allTime", description="Работает ли круглосуточно", examples=["false"])]
-    monday: Annotated[str | None, Field(description="Время работы в понедельник", examples=["08:00-01:00"])]
-    tuesday: Annotated[str | None, Field(description="Время работы во вторник", examples=["10:00-01:00"])]
-    wednesday: Annotated[str | None, Field(description="Время работы в среду", examples=["09:00-21:30"])]
-    thursday: Annotated[str | None, Field(description="Время работы в четверг", examples=["10:00-21:45"])]
-    friday: Annotated[str | None, Field(description="Время работы в пятницу", examples=["10:00-23:00"])]
-    saturday: Annotated[str | None, Field(description="Время работы в субботу", examples=["06:00-21:30"])]
-    sunday: Annotated[str | None, Field(description="Время работы в воскресенье", examples=["null"])]
+    days: Annotated[
+        list[str | None],
+        Field(
+            description="Список времени работы по дням недели (0 элемент - понедельник, 7 элемент - воскресенье",
+            examples=['["09:00-17:00", "09:00-17:00", "09:00-17:00", "09:00-17:00", "09:00-17:00", null, null]']
+        )
+    ]
+
+    @model_validator(mode="before")
+    @classmethod
+    def _formatting(cls, data: Any) -> Any:
+        if isinstance(data, Week):
+            return {
+                "all_time": data.all_time,
+                "days": [data.monday, data.tuesday, data.wednesday, data.thursday, data.friday,
+                         data.saturday, data.sunday]
+            }
+        return data
 
 
 class ATMServicesModel(BaseOrmModel):
