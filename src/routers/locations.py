@@ -53,7 +53,8 @@ def get_office_reviews(office_id: Annotated[int, Query(alias='officeId')],
 
 
 @locations_router.get('/office_visit/request', summary='Запросить посещение отделения')
-def request_office_visit(office_id: Annotated[int, Query(alias='officeId', description="Идентификатор отделения банка")],
+def request_office_visit(office_id: Annotated[int, Query(alias='officeId',
+                                                         description="Идентификатор отделения банка")],
                          logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
                          ) -> dict[str, Any]:
     """Получить доступное время для записи в отделение банка
@@ -65,10 +66,18 @@ def request_office_visit(office_id: Annotated[int, Query(alias='officeId', descr
 
 @locations_router.post('/office_visit/register', summary='Записаться на посещение отделения')
 def register_office_visit(logic: Annotated[LocationsLogic, Depends(get_locations_logic)],
-                          user_phone: Annotated[str, Depends(get_phone_by_token)]) -> dict[str, Any]:
+                          user_phone: Annotated[str, Depends(get_phone_by_token)],
+                          office_id: Annotated[int, Query(alias='officeId',
+                                                          description="Идентификатор отделения банка")],
+                          selected_time: Annotated[str, Query(alias='selectedTime',
+                                                              description="Выбранное время посещения")]
+                          ) -> dict[str, Any]:
     """Запись в электронную очередь отделения банка
 
     Функционал доступен авторизованным клиентам банка, либо пользователям,
     прошедшим процедуру подтверждения личности (смс, vk, ...)
+
+    Возвращает регистрационный номер в очереди и информацию для памятки пользователю:
+    выбранная дата и время, адрес отделения, номер телефона (на который был оформлен прием)
     """
-    return logic.register_office_visit(user_phone)
+    return logic.register_office_visit(user_phone, office_id, selected_time)

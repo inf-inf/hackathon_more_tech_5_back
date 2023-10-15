@@ -22,10 +22,10 @@ class LocationsLogic:
     def request_office_visit(self, _office_id: int) -> dict[str, bool]:
         return {'9:00': False, '9:15': True, '9:30': False}
 
-    def register_office_visit(self, phone: str) -> dict[str, str]:
+    def register_office_visit(self, phone: str, _office_id: int, _selected_time: str) -> dict[str, str]:
         return {
             'address': '141506, Московская область, г. Солнечногорск, ул. Красная, д. 60',
             'code': 'ЭО-123',
             'phone': phone,
-            'datetime': '...'
+            'datetime': '10:45'
         }
